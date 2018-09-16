@@ -16,6 +16,7 @@ RUN usermod -aG wheel buildroot
 # Install Buildroot.
 RUN git clone git://git.buildroot.net/buildroot /home/buildroot/buildroot
 RUN echo "alias ls='ls --color=auto'" >> /home/buildroot/.bashrc
+RUN echo "PS1='\u@\H [\w]$ '" >> /home/buildroot/.bashrc
 RUN chown -R buildroot:buildroot /home/buildroot
 
 CMD ["/bin/sh"]

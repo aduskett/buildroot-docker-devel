@@ -4,10 +4,10 @@ MAINTAINER Adam Duskett <aduskett@gmail.com>
 # Install dependencies
 RUN dnf update -y
 RUN dnf install -y \
-    flex bison bash dnf wget curl which bzip2 sudo git \
+    flex bison wget which bzip2 sudo git \
     cmake make gcc gcc-c++ unzip file bc patch \
     perl-Data-Dumper perl-ExtUtils-MakeMaker perl-Thread-Queue \
-    ncurses-devel
+    ncurses-devel cpio python rsync
 
 RUN useradd buildroot
 RUN usermod -aG wheel buildroot
@@ -19,6 +19,7 @@ RUN usermod -aG wheel buildroot
     mv buildroot-* /home/buildroot/buildroot
 
 RUN echo "alias ls='ls --color=auto'" >> /home/buildroot/.bashrc
+RUN echo "PS1='\u@\H [\w]$ '" >> /home/buildroot/.bashrc
 RUN chown -R buildroot:buildroot /home/buildroot
 
 CMD ["/bin/sh"]

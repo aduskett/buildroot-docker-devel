@@ -1,20 +1,18 @@
-FROM centos:7
+FROM fedora:29
 MAINTAINER Adam Duskett <aduskett@gmail.com>
 
+LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
+description="Container with everything needed to run Buildroot"
+
 # Install dependencies
-RUN yum update -y
-RUN yum install -y epel-release
-RUN yum install -y \
+RUN dnf update -y
+RUN dnf install -y \
  flex \
  bison \
- bash \
  wget \
- curl \
  which \
  bzip2 \
  sudo \
- python36-setuptools \
- deltarpm \
  git \
  cmake \
  make \
@@ -27,14 +25,20 @@ RUN yum install -y \
  perl-Data-Dumper \
  perl-ExtUtils-MakeMaker \
  perl-Thread-Queue \
- ncurses-devel
-
-RUN easy_install-3.6 pip
+ ncurses-devel \
+ cpio \
+ python \
+ rsync
 
 RUN useradd -ms /bin/bash br-user
-RUN usermod -aG wheel br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc
 RUN echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc
+RUN chown -R br-user:br-user /home/br-user
+
+USER br-user
+WORKDIR /home/br-user
+ENV HOME /home/br-user
+ENV LC_ALL en_US.UTF-8
 
 CMD ["/bin/sh"]
 

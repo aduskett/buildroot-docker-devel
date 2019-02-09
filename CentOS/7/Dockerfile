@@ -13,6 +13,7 @@ RUN yum install -y \
  which \
  bzip2 \
  sudo \
+ python36 \
  python36-setuptools \
  deltarpm \
  git \
@@ -29,7 +30,7 @@ RUN yum install -y \
  perl-Thread-Queue \
  ncurses-devel
 
-RUN easy_install-3.6 pip
+RUN /usr/bin/easy_install-3.6 --install-dir=/usr/lib/python3.6/site-packages/ pip
 
 RUN useradd -ms /bin/bash br-user
 RUN usermod -aG wheel br-user

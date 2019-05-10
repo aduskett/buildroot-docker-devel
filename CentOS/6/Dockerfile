@@ -31,7 +31,9 @@ RUN yum install -y \
  perl-Thread-Queue \
  ncurses-devel \
  nano \
- rh-python36-python-pip
+ rh-python36-python-pip \
+ python27
+
 
 RUN useradd -ms /bin/bash br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc
@@ -41,7 +43,9 @@ RUN yum install -y python-pip
 RUN pip install argparse
 
 RUN echo "source /opt/rh/rh-python36/enable" >> /home/br-user/.bashrc
+RUN echo "source /opt/rh/python27/enable" >> /home/br-user/.bashrc
 RUN echo "source /opt/rh/rh-python36/enable" >> /root/.bashrc
+RUN echo "source /opt/rh/python27/enable" >> /root/.bashrc
 
 RUN chown -R br-user:br-user /home/br-user
 RUN echo "alias ls='ls --color=auto'" >> /root/.bashrc

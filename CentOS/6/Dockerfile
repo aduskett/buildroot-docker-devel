@@ -4,7 +4,7 @@ MAINTAINER Adam Duskett <aduskett@gmail.com>
 # Install dependencies
 RUN yum update -y
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-RUN yum install -y yum install centos-release-scl
+RUN yum install -y centos-release-scl
 RUN yum install -y \
  flex \
  bison \

@@ -1,4 +1,4 @@
-FROM fedora:29
+FROM fedora:28
 MAINTAINER Adam Duskett <aduskett@gmail.com>
 
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
@@ -40,5 +40,5 @@ WORKDIR /home/br-user
 ENV HOME /home/br-user
 ENV LC_ALL en_US.UTF-8
 
-CMD ["/bin/sh"]
+CMD ["/bin/bash"]
 

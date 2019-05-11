@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+   br-fedora29:
+    build:
+      context: ./
+    privileged: true
+    stdin_open: true
+    tty: true
+    image: br-fedora29:latest
+    container_name:  br-fedora29

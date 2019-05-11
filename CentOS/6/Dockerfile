@@ -34,6 +34,17 @@ RUN yum install -y \
  rh-python36-python-pip \
  python27
 
+RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-2.17-55.el6.x86_64.rpm
+RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-common-2.17-55.el6.x86_64.rpm
+RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-devel-2.17-55.el6.x86_64.rpm
+RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-headers-2.17-55.el6.x86_64.rpm
+
+RUN sudo rpm -Uvh glibc-2.17-55.el6.x86_64.rpm \
+ glibc-common-2.17-55.el6.x86_64.rpm \
+ glibc-devel-2.17-55.el6.x86_64.rpm \
+ glibc-headers-2.17-55.el6.x86_64.rpm
+
+RUN sudo rm *.rpm
 
 RUN useradd -ms /bin/bash br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc

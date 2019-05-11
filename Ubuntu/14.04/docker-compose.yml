@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+   br-ubuntu14:
+    build:
+      context: ./
+    privileged: true
+    stdin_open: true
+    tty: true
+    image: br-ubuntu14:latest
+    container_name:  br-ubuntu14

@@ -37,5 +37,8 @@ RUN usermod -aG wheel br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc
 RUN echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc
 
-CMD ["/bin/sh"]
+USER br-user
+ENV HOME /home/br-user
+ENV LC_ALL en_US.UTF-8
 
+CMD ["/bin/bash"]

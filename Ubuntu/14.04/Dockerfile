@@ -38,4 +38,4 @@ WORKDIR /home/br-user
 ENV HOME /home/br-user
 ENV LC_ALL en_US.UTF-8
 
-CMD ["/bin/sh"]
+CMD ["/bin/bash"]

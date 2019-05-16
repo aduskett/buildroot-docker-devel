@@ -29,6 +29,8 @@ RUN yum install -y \
  perl-ExtUtils-MakeMaker \
  perl-Thread-Queue \
  ncurses-devel \
+ glibc.i686 \
+ zlib.i686 \
  svn \
  mc
 

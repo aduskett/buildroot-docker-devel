@@ -26,6 +26,8 @@ RUN apt-get install -y \
  python-pip \
  rsync \
  subversion \
+ libc6-i386 \
+ lib32z1 \
  mc
 
 RUN pip install nose2 pexpect

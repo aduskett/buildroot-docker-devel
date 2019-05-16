@@ -29,6 +29,8 @@ RUN dnf install -y \
  cpio \
  python \
  rsync \
+ glibc.i686 \
+ zlib.i686 \
  svn \
  mc
 

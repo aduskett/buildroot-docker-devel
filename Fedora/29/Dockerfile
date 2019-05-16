@@ -28,7 +28,8 @@ RUN dnf install -y \
  ncurses-devel \
  cpio \
  python \
- rsync
+ rsync \
+ svn
 
 RUN useradd -ms /bin/bash br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc

@@ -29,7 +29,8 @@ RUN dnf install -y \
  cpio \
  python \
  rsync \
- svn
+ svn \
+ mc
 
 RUN useradd -ms /bin/bash br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc

@@ -25,7 +25,8 @@ RUN apt-get install -y \
  cpio \
  python-pip \
  rsync \
- subversion
+ subversion \
+ mc
 
 RUN pip install nose2 pexpect
 RUN locale-gen en_US.UTF-8

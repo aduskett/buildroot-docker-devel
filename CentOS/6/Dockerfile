@@ -31,7 +31,6 @@ RUN yum install -y \
  perl-Thread-Queue \
  ncurses-devel \
  nano \
- rh-python36-python-pip \
  python27 \
  svn \
  mc
@@ -46,7 +45,11 @@ RUN sudo rpm -Uvh glibc-2.17-55.el6.x86_64.rpm \
  glibc-devel-2.17-55.el6.x86_64.rpm \
  glibc-headers-2.17-55.el6.x86_64.rpm
 
-RUN sudo rm *.rpm
+# 32 bit headers
+RUN yum install -y https://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-i386/glibc-2.17-55.fc20/glibc-2.17-55.el6.i686.rpm
+RUN yum install -y zlib.i686
+
+RUN rm *.rpm
 
 RUN useradd -ms /bin/bash br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc
@@ -55,9 +58,7 @@ RUN echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc
 RUN yum install -y python-pip
 RUN pip install argparse
 
-RUN echo "source /opt/rh/rh-python36/enable" >> /home/br-user/.bashrc
 RUN echo "source /opt/rh/python27/enable" >> /home/br-user/.bashrc
-RUN echo "source /opt/rh/rh-python36/enable" >> /root/.bashrc
 RUN echo "source /opt/rh/python27/enable" >> /root/.bashrc
 
 RUN chown -R br-user:br-user /home/br-user

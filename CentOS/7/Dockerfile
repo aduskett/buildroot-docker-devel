@@ -28,7 +28,11 @@ RUN yum install -y \
  perl-Data-Dumper \
  perl-ExtUtils-MakeMaker \
  perl-Thread-Queue \
- ncurses-devel
+ ncurses-devel \
+ glibc.i686 \
+ zlib.i686 \
+ svn \
+ mc
 
 RUN /usr/bin/easy_install-3.6 --install-dir=/usr/lib/python3.6/site-packages/ pip
 

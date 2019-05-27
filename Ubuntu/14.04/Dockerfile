@@ -24,7 +24,11 @@ RUN apt-get install -y \
  ncurses-dev \
  cpio \
  python-pip \
- rsync
+ rsync \
+ subversion \
+ libc6-i386 \
+ lib32z1 \
+ mc
 
 RUN pip install nose2 pexpect
 RUN locale-gen en_US.UTF-8

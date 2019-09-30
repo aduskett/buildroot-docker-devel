@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+   br-ubuntu19.10:
+    build:
+      context: ./
+    privileged: true
+    stdin_open: true
+    tty: true
+    image: br-ubuntu19.10:latest
+    container_name:  br-ubuntu19.10

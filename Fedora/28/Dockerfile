@@ -18,6 +18,7 @@ RUN dnf install -y \
  make \
  gcc \
  gcc-c++ \
+ libstdc++-static \
  unzip \
  file \
  bc \

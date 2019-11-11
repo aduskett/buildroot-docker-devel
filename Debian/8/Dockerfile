@@ -31,7 +31,10 @@ RUN apt-get install -y \
  mc \
  debconf \
  python-dev \
- locales
+ locales \
+ nano \
+ vi \
+ mc
 
 RUN pip install nose2 pexpect
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen; \

@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+   br-debian8:
+    build:
+      context: ./
+    privileged: true
+    stdin_open: true
+    tty: true
+    image: br-debian8:latest
+    container_name:  br-debian8

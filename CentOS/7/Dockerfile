@@ -15,6 +15,7 @@ RUN yum install -y \
  sudo \
  python36 \
  python36-setuptools \
+ python36-pip \
  deltarpm \
  git \
  cmake \
@@ -33,8 +34,6 @@ RUN yum install -y \
  zlib.i686 \
  svn \
  mc
-
-RUN /usr/bin/easy_install-3.6 --install-dir=/usr/lib/python3.6/site-packages/ pip
 
 RUN useradd -ms /bin/bash br-user
 RUN usermod -aG wheel br-user

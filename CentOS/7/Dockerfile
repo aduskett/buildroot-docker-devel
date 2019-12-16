@@ -34,7 +34,7 @@ RUN yum install -y \
  svn \
  mc
 
-RUN /usr/bin/easy_install-3.6 --install-dir=/usr/lib/python3.6/site-packages/ pip
+RUN pip3 install -U pip --prefix=/usr
 
 RUN useradd -ms /bin/bash br-user
 RUN usermod -aG wheel br-user

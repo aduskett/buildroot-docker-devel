@@ -33,7 +33,7 @@ RUN apt-get install -y \
  python-dev \
  locales \
  nano \
- vi \
+ vim \
  mc
 
 RUN pip install nose2 pexpect

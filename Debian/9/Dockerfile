@@ -34,7 +34,8 @@ RUN apt-get install -y \
  locales \
  nano \
  vim \
- mc
+ mc \
+ expect
 
 RUN pip install nose2 pexpect
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen; \
@@ -44,6 +45,8 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen; \
  echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc; \
  echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc; \
  chown -R br-user:br-user /home/br-user;
+
+COPY brmake /usr/bin
 
 USER br-user
 WORKDIR /home/br-user

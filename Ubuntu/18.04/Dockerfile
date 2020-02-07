@@ -36,12 +36,15 @@ RUN set -e; \
   rsync \
   subversion \
   libc6-i386 \
-  lib32z1
+  lib32z1 \
+  expect
 
 RUN useradd -ms /bin/bash br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc
 RUN echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc
 RUN chown -R br-user:br-user /home/br-user
+
+COPY brmake /usr/bin
 
 USER br-user
 WORKDIR /home/br-user

@@ -3,7 +3,7 @@ MAINTAINER Adam Duskett <aduskett@gmail.com>
 
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Container with everything needed to run Buildroot"
-
+COPY brmake /usr/bin
 RUN set -e; \
   apt-get update; \
   apt-get install -y apt-utils locales; \
@@ -29,6 +29,7 @@ RUN set -e; \
   unzip \
   file \
   bc \
+  nano \
   patch \
   ncurses-dev \
   cpio \
@@ -37,13 +38,16 @@ RUN set -e; \
   subversion \
   libc6-i386 \
   lib32z1 \
-  mc
+  mc \
+  expect
 
 RUN pip install nose2 pexpect
 RUN useradd -ms /bin/bash br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc
 RUN echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc
 RUN chown -R br-user:br-user /home/br-user
+
+COPY brmake /usr/bin
 
 USER br-user
 WORKDIR /home/br-user

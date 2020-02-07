@@ -1,0 +1,22 @@
+  flex \
+  bison \
+  wget \
+  bzip2 \
+  sudo \
+  git \
+  cmake \
+  make \
+  gcc \
+  g++ \
+  unzip \
+  file \
+  bc \
+  patch \
+  ncurses-dev \
+  cpio \
+  python-pip \
+  rsync \
+  subversion \
+  libc6-i386 \
+  lib32z1 \
+  mc

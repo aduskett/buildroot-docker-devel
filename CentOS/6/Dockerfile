@@ -33,7 +33,8 @@ RUN yum install -y \
  nano \
  python27 \
  svn \
- mc
+ mc \
+ expect
 
 RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-2.17-55.el6.x86_64.rpm
 RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-common-2.17-55.el6.x86_64.rpm
@@ -64,6 +65,8 @@ RUN echo "source /opt/rh/python27/enable" >> /root/.bashrc
 RUN chown -R br-user:br-user /home/br-user
 RUN echo "alias ls='ls --color=auto'" >> /root/.bashrc
 RUN echo "PS1='\u@\H [\w]$ '" >> /root/.bashrc
+
+COPY brmake /usr/bin
 
 USER br-user
 ENV HOME /home/br-user

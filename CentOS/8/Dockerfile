@@ -28,7 +28,8 @@ RUN dnf install -y \
  glibc.i686 \
  zlib.i686 \
  svn \
- mc
+ mc \
+ expect
 
 RUN pip3 install -U pip --prefix=/usr
 
@@ -36,6 +37,8 @@ RUN useradd -ms /bin/bash br-user
 RUN usermod -aG wheel br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc
 RUN echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc
+
+COPY brmake /usr/bin
 
 USER br-user
 ENV HOME /home/br-user

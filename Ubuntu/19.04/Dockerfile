@@ -11,6 +11,11 @@ RUN set -e; \
   localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 ENV LANG en_US.utf8
 
+# Setup tzdata first as to avoid a dialog requesting tzdata setup.
+RUN set -e; \
+  apt-get update; \
+  apt-get install -y tzdata;
+
 # Install dependencies
 RUN set -e; \
   apt-get update; \
@@ -29,6 +34,7 @@ RUN set -e; \
   unzip \
   file \
   bc \
+  nano \
   patch \
   ncurses-dev \
   cpio \

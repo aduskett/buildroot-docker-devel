@@ -3,6 +3,9 @@ services:
    br-ubuntu18.04:
     build:
       context: ./
+    environment:
+      - TZ=America/Los_Angeles
+      - DEBIAN_FRONTEND=noninteractive
     privileged: true
     stdin_open: true
     tty: true

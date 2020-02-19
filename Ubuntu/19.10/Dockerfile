@@ -11,34 +11,39 @@ RUN set -e; \
   localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 ENV LANG en_US.utf8
 
+# Setup tzdata first as to avoid a dialog requesting tzdata setup.
+RUN set -e; \
+  apt-get update; \
+  apt-get install -y tzdata;
+
 # Install dependencies
 RUN set -e; \
   apt-get update; \
   apt-get upgrade -y; \
   apt-get install -y \
-  bc \
-  bison \
-  bzip2 \
-  cmake \
-  cpio \
-  file \
   flex \
-  g++ \
-  gcc \
+  bison \
+  wget \
+  bzip2 \
+  sudo \
   git \
-  lib32z1 \
-  libc6-i386 \
+  cmake \
   make \
-  mc \
+  gcc \
+  g++ \
+  unzip \
+  file \
+  bc \
   nano \
-  ncurses-dev \
   patch \
+  ncurses-dev \
+  cpio \
   python-pip \
   rsync \
   subversion \
-  sudo \
-  unzip \
-  wget \
+  libc6-i386 \
+  lib32z1 \
+  mc \
   expect
 
 RUN pip install nose2 pexpect

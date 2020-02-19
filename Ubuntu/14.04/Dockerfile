@@ -4,32 +4,40 @@ MAINTAINER Adam Duskett <aduskett@gmail.com>
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Container with everything needed to run Buildroot"
 
+# Setup tzdata first as to avoid a dialog requesting tzdata setup.
+RUN set -e; \
+  apt-get update; \
+  apt-get install -y tzdata;
+
 # Install dependencies
-RUN apt-get update; apt-get upgrade -y
-RUN apt-get install -y \
- flex \
- bison \
- wget \
- bzip2 \
- sudo \
- git \
- cmake \
- make \
- gcc \
- g++ \
- unzip \
- file \
- bc \
- patch \
- ncurses-dev \
- cpio \
- python-pip \
- rsync \
- subversion \
- libc6-i386 \
- lib32z1 \
- mc \
- expect
+RUN set -e; \
+  apt-get update; \
+  apt-get upgrade -y; \
+  apt-get install -y \
+  flex \
+  bison \
+  wget \
+  bzip2 \
+  sudo \
+  git \
+  cmake \
+  make \
+  gcc \
+  g++ \
+  unzip \
+  file \
+  bc \
+  nano \
+  patch \
+  ncurses-dev \
+  cpio \
+  python-pip \
+  rsync \
+  subversion \
+  libc6-i386 \
+  lib32z1 \
+  mc \
+  expect
 
 RUN pip install nose2 pexpect
 RUN locale-gen en_US.UTF-8

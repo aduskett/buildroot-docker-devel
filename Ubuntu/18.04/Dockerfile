@@ -35,7 +35,6 @@ RUN set -e; \
   gcc-8-base \
   git \
   lib32z1 \
-  libc6-i386 \
   make \
   nano \
   ncurses-dev \
@@ -47,6 +46,13 @@ RUN set -e; \
   tar \
   unzip \
   wget
+
+# 32-bit support.
+RUN set -e; \
+  apt-get install -y \
+  gcc-multilib \
+  g++-multilib \
+  libc6-i386
 
 RUN useradd -ms /bin/bash br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc

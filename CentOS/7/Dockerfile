@@ -18,7 +18,7 @@ RUN yum install -y \
  gcc \
  gcc-c++ \
  git \
- glibc.i686 \
+ libstdc++-static \
  make \
  mc \
  ncurses-devel \
@@ -32,13 +32,24 @@ RUN yum install -y \
  svn \
  unzip \
  wget \
- which \
- zlib.i686
+ which
+
+
+# 32bit binaries
+RUN set -e; \
+ yum install -y \
+ glibc-devel.i686 \
+ libgcc.i686 \
+ libstdc++devel.i686 \
+ ncurses-devel.i686 \
+ zlib.i686 \
+ glibc.i686
 
 # Install GCC9 in case there is a need for gcc > 4.8
 RUN set -e; \
- yum install -y centos-release-scl; \
- yum install -y devtoolset-9-gcc-c++;
+ yum install -y \
+ centos-release-scl \
+ devtoolset-4-gcc-c++;
 
 RUN pip3 install -U pip --prefix=/usr
 

@@ -4,67 +4,97 @@ MAINTAINER Adam Duskett <aduskett@gmail.com>
 # Install dependencies
 RUN yum update -y
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-RUN yum install -y centos-release-scl
 RUN yum install -y \
- flex \
- bison \
- bash \
- yum \
- wget \
- curl \
- which \
- bzip2 \
- sudo \
- deltarpm \
- git \
- cmake \
- make \
- gcc \
- gcc-c++ \
- unzip \
- file \
- bc \
- xz \
- patch \
- perl-Data-Dumper \
- perl-ExtUtils-MakeMaker \
- perl-Thread-Queue \
- ncurses-devel \
- nano \
- python27 \
- svn \
- mc \
- expect
+  bash \
+  bc \
+  bison \
+  bzip2 \
+  cmake \
+  cpio \
+  curl \
+  dialog \
+  deltarpm \
+  expect \
+  file \
+  flex \
+  gcc \
+  gcc-c++ \
+  git \
+  make \
+  mc \
+  nano \
+  ncurses-devel \
+  patch \
+  perl-Data-Dumper \
+  perl-ExtUtils-MakeMaker \
+  perl-Thread-Queue \
+  sudo \
+  svn \
+  tar \
+  unzip \
+  wget \
+  which \
+  xz
 
-RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-2.17-55.el6.x86_64.rpm
-RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-common-2.17-55.el6.x86_64.rpm
-RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-devel-2.17-55.el6.x86_64.rpm
-RUN wget http://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-x86_64/glibc-2.17-55.fc20/glibc-headers-2.17-55.el6.x86_64.rpm
+# 32bit gcc >= 4.9 support
+COPY copr-gcc8.repo /etc/yum.repos.d/
+RUN set -e; \
+  yum install -y \
+  glibc-devel.i686 \
+  devtoolset-8-gcc-c++ \
+  devtoolset-8-libstdc++-devel.i686
 
-RUN sudo rpm -Uvh glibc-2.17-55.el6.x86_64.rpm \
- glibc-common-2.17-55.el6.x86_64.rpm \
- glibc-devel-2.17-55.el6.x86_64.rpm \
- glibc-headers-2.17-55.el6.x86_64.rpm
+RUN set -e; \
+  yum install -y centos-release-scl; \
+  yum install -y \
+  python27 \
+  rh-python36-python-pip;
 
-# 32 bit headers
-RUN yum install -y https://copr-be.cloud.fedoraproject.org/results/mosquito/myrepo-el6/epel-6-i386/glibc-2.17-55.fc20/glibc-2.17-55.el6.i686.rpm
-RUN yum install -y zlib.i686
+RUN set -e; \
+  PATH=/opt/rh/python27/root/usr/bin${PATH:+:${PATH}} \
+  LD_LIBRARY_PATH=/opt/rh/python27/root/usr/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} \
+  PKG_CONFIG_PATH=/opt/rh/python27/root/usr/lib64/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}} \
+  /opt/rh/python27/root/usr/bin/pip2 install -U pip;
 
-RUN rm *.rpm
+RUN set -e; \
+  PATH=/opt/rh/python27/root/usr/bin${PATH:+:${PATH}} \
+  LD_LIBRARY_PATH=/opt/rh/python27/root/usr/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} \
+  PKG_CONFIG_PATH=/opt/rh/python27/root/usr/lib64/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}} \
+  /opt/rh/python27/root/usr/bin/pip2 install \
+  nose2==0.9.2 \
+  pexpect==4.8.0 \
+  spdx_lookup==0.3.2;
 
-RUN useradd -ms /bin/bash br-user
-RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc
-RUN echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc
+RUN set -e; \
+  PATH=/opt/rh/rh-python36/root/usr/bin${PATH:+:${PATH}} \
+  LD_LIBRARY_PATH=/opt/rh/rh-python36/root/usr/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} \
+  PKG_CONFIG_PATH=/opt/rh/rh-python36/root/usr/lib64/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}} \
+  /opt/rh/rh-python36/root/usr/bin/pip3 install -U pip;
 
-RUN yum install -y python-pip
-RUN pip install argparse
+RUN set -e; \
+  PATH=/opt/rh/rh-python36/root/usr/bin${PATH:+:${PATH}} \
+  LD_LIBRARY_PATH=/opt/rh/rh-python36/root/usr/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}} \
+  PKG_CONFIG_PATH=/opt/rh/rh-python36/root/usr/lib64/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}} \
+  /opt/rh/rh-python36/root/usr/bin/pip3 install \
+  nose2==0.9.2 \
+  pexpect==4.8.0 \
+  spdx_lookup==0.3.2;
 
-RUN echo "source /opt/rh/python27/enable" >> /home/br-user/.bashrc
-RUN echo "source /opt/rh/python27/enable" >> /root/.bashrc
+RUN set -e; \
+  useradd -ms /bin/bash br-user; \
+  echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc; \
+  echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc; \
+  echo "source /opt/rh/python27/enable" >> /home/br-user/.bashrc; \
+  echo "source /opt/rh/python27/enable" >> /root/.bashrc; \
+  echo "source /opt/rh/rh-python36/enable" >> /home/br-user/.bashrc; \
+  echo "source /opt/rh/rh-python36/enable" >> /root/.bashrc; \
+  echo "source /opt/rh/devtoolset-8/enable" >> /home/br-user/.bashrc; \
+  echo "source /opt/rh/devtoolset-8/enable" >> /root/.bashrc;
 
-RUN chown -R br-user:br-user /home/br-user
-RUN echo "alias ls='ls --color=auto'" >> /root/.bashrc
-RUN echo "PS1='\u@\H [\w]$ '" >> /root/.bashrc
+RUN set -e; \
+  chown -R br-user:br-user /home/br-user; \
+  echo "alias ls='ls --color=auto'" >> /root/.bashrc; \
+  echo "PS1='\u@\H [\w]$ '" >> /root/.bashrc
 
 COPY brmake /usr/bin
 

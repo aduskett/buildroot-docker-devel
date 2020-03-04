@@ -1,0 +1,22 @@
+
+[copr:copr.fedorainfracloud.org:mayeut:devtoolset-8]
+name=Copr repo for devtoolset-8 owned by mayeut
+baseurl=https://download.copr.fedorainfracloud.org/results/mayeut/devtoolset-8/epel-6-$basearch/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=1
+gpgkey=https://download.copr.fedorainfracloud.org/results/mayeut/devtoolset-8/pubkey.gpg
+repo_gpgcheck=0
+enabled=1
+enabled_metadata=1
+
+[copr:copr.fedorainfracloud.org:mayeut:devtoolset-8-i386]
+name=Copr repo for devtoolset-8-i386 owned by mayeut
+baseurl=https://download.copr.fedorainfracloud.org/results/mayeut/devtoolset-8/epel-6-i386/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=1
+gpgkey=https://download.copr.fedorainfracloud.org/results/mayeut/devtoolset-8/pubkey.gpg
+repo_gpgcheck=0
+enabled=1
+enabled_metadata=1

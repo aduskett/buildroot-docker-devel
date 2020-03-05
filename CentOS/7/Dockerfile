@@ -56,8 +56,8 @@ RUN set -e; \
 
 # Install GCC8 in case there is a need for gcc > 4.8
 RUN set -e; \
+ yum install -y centos-release-scl; \
  yum install -y \
- centos-release-scl \
  devtoolset-8-gcc-c++ \
  devtoolset-8-libstdc++-devel;
 

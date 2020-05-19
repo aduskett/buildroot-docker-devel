@@ -19,6 +19,7 @@ RUN dnf install -y \
   gcc \
   gcc-c++ \
   git \
+  libstdc++-devel \
   make \
   mc \
   nano \
@@ -27,6 +28,7 @@ RUN dnf install -y \
   perl-Data-Dumper \
   perl-ExtUtils-MakeMaker \
   perl-Thread-Queue \
+  rsync \
   sudo \
   svn \
   tar \
@@ -51,9 +53,7 @@ RUN set -e; \
   pip2 install \
   nose2==0.9.2 \
   pexpect==4.8.0 \
-  spdx_lookup==0.3.2;
-
-RUN set -e; \
+  spdx_lookup==0.3.2; \
   dnf install -y python3-pip; \
   ln -s /usr/bin/python3 /usr/bin/python; \
   pip3 install -U pip --prefix=/usr; \

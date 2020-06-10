@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+   br-arch:
+    build:
+      context: ./
+    privileged: true
+    stdin_open: true
+    tty: true
+    image: br-arch:latest
+    container_name:  br-arch

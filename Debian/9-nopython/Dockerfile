@@ -1,4 +1,4 @@
-FROM debian:8
+FROM debian:9
 MAINTAINER Adam Duskett <aduskett@gmail.com>
 
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
@@ -29,7 +29,6 @@ RUN set -e; \
   apt-get update; \
   apt-get upgrade -y; \
   apt-get install -y \
-  bash \
   bc \
   bison \
   bzip2 \
@@ -63,30 +62,6 @@ RUN set -e; \
   gcc-multilib \
   g++-multilib \
   libc6-i386
-
-# Python2
-RUN set -e; \
-  apt-get install -y python-pip python-dev;
-
-# Use the deadsnakes PPA for ubuntu 14.04 to install python3.5.
-RUN set -e; \
-  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu trusty main" > /etc/apt/sources.list.d/deadsnakes.list; \
-  echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu trusty main" >> /etc/apt/sources.list.d/deadsnakes.list; \
-  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F23C5A6CF475977595C89F51BA6932366A755776; \
-  apt-get update; \
-  apt-get install -y python3.5 python3.5-dev; \
-  rm -rf /usr/bin/python3; \
-  ln -s /usr/bin/python3.5 /usr/bin/python3; \
-  wget -q -O - https://bootstrap.pypa.io/get-pip.py | python3.5;
-
-RUN set -e; \
-  pip2 install \
-  nose2==0.9.2 \
-  pexpect==4.8.0 \
-  spdx_lookup==0.3.2; \
-  pip3 install \
-  nose2==0.9.2 \
-  pexpect==4.8.0;
 
 # Generate Locales
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen; \

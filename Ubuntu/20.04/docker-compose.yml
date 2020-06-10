@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+   br-ubuntu20.04:
+    build:
+      context: ./
+    environment:
+      - TZ=America/Los_Angeles
+      - DEBIAN_FRONTEND=noninteractive
+    privileged: true
+    stdin_open: true
+    tty: true
+    image: br-ubuntu20.04:latest
+    container_name:  br-ubuntu20.04

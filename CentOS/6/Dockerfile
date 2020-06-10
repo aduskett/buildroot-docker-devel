@@ -28,6 +28,7 @@ RUN yum install -y \
   perl-Data-Dumper \
   perl-ExtUtils-MakeMaker \
   perl-Thread-Queue \
+  rsync \
   sudo \
   svn \
   tar \

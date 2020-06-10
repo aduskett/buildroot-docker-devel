@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+   br-debian9-nopython:
+    build:
+      context: ./
+    privileged: true
+    stdin_open: true
+    tty: true
+    image: br-debian9-nopython:latest
+    container_name:  br-debian9-nopython

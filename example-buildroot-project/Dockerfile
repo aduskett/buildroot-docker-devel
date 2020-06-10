@@ -80,7 +80,9 @@ USER br-user
 RUN set -e; \
   cd /home/br-user/buildroot/; \
   rm -rf configs; \
+  rm -rf board; \
   ln -s /mnt/${COMPANY_NAME} ${COMPANY_NAME}; \
+  ln -s ${COMPANY_NAME}/board board; \
   ln -s ${COMPANY_NAME}/configs configs; \
   ln -s ${COMPANY_NAME}/dl dl;
 

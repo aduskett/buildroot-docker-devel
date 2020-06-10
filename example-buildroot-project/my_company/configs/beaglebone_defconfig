@@ -1,10 +1,11 @@
 BR2_arm=y
 BR2_cortex_a8=y
-BR2_GLOBAL_PATCH_DIR="board/beaglebone/patches"
+BR2_DL_DIR="$(TOPDIR)/my_company/dl"
+BR2_GLOBAL_PATCH_DIR="my_company/board/beaglebone/patches"
 BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_19=y
-BR2_ROOTFS_POST_BUILD_SCRIPT="board/beaglebone/post-build.sh"
-BR2_ROOTFS_POST_IMAGE_SCRIPT="support/scripts/genimage.sh"
-BR2_ROOTFS_POST_SCRIPT_ARGS="-c board/beaglebone/genimage.cfg"
+BR2_ROOTFS_POST_BUILD_SCRIPT="my_company/board/beaglebone/post-build.sh"
+BR2_ROOTFS_POST_IMAGE_SCRIPT="my_company/support/scripts/genimage.sh"
+BR2_ROOTFS_POST_SCRIPT_ARGS="-c my_company/board/beaglebone/genimage.cfg"
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,beagleboard,linux,4.19.79-ti-r30)/linux-4.19.79-ti-r30.tar.gz"

@@ -1,0 +1,34 @@
+#!/usr/bin/bash
+set -e
+
+BR_DIR=/home/br-user/buildroot
+COMPANY_DIR="${BR_DIR}/my_company"
+OUTPUT_DIR="${COMPANY_DIR}/output"
+
+run_command() {
+  echo "${1}"
+  if ! ${1}; then
+    exit 1
+  fi
+}
+
+apply_configs() {
+  cd ${BR_DIR}
+  for i in $(ls ${COMPANY_DIR}/configs/*); do
+    config_file=$(echo $(basename ${i}))
+    build_dir=$(echo $(basename ${i}) |sed s%"_defconfig"%''%g);
+    if [ ! -d ${OUTPUT_DIR}/${build_dir} ]; then
+      BR2_EXTERNAL=${COMPANY_DIR}/package/ make ${config_file} O=${OUTPUT_DIR}/${build_dir}
+    fi
+  done
+}
+
+
+main() {
+  sleep 2
+  apply_configs
+}
+
+main "${@}"
+exec /bin/bash
+exit 0

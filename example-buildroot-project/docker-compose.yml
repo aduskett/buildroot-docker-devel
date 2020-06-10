@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+   example-buildroot-project-build:
+    build:
+      context: ./
+    privileged: true
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./:/mnt
+    image: dcfcosexample-buildroot-project-build:latest
+    container_name:  example-buildroot-project-build
+

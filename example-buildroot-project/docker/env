@@ -1,0 +1,11 @@
+# Build verbosely
+VERBOSE=0
+
+# Remove everything in my_company/output and start fresh.
+CLEAN_ALL=1
+
+# Apply all configs in my_company/configs and build every single config.
+BUILD_ALL=0
+
+# A comma seperated list of configs to build.
+BUILD_LIST="beaglebone"

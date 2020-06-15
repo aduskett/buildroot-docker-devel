@@ -1,34 +1,91 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 set -e
 
 BR_DIR=/home/br-user/buildroot
-COMPANY_DIR="${BR_DIR}/my_company"
-OUTPUT_DIR="${COMPANY_DIR}/output"
+COMPANY_NAME="my_company"
+COMPANY_DIR="${BR_DIR}/${COMPANY_NAME}"
+OUTPUT_DIR_BASE="${COMPANY_DIR}/output"
 
-run_command() {
-  echo "${1}"
-  if ! ${1}; then
-    exit 1
-  fi
-}
+# Set VERBOSE in docker/env
+MAKE_COMMAND="brmake"
+if [ "${VERBOSE}" == "1" ]; then
+  MAKE_COMMAND="make"
+fi
 
+
+# Automatically loop through the contents of ${COMPANY_NAME}/configs and pre-setup
+# the build environments.
+# This ensures the following:
+# 1) The external package directory is passed to the make config_defconfig command.
+# 2) The external packages in ${COMPANY_NAME}/package are selected.
+# 3) The external packages are built without a user having to know how to pass the BR2_EXTERNAL command to make.
+#
+# Note: There is no need to check for errors, as `set -e` is set on line 3.
 apply_configs() {
   cd ${BR_DIR}
-  for i in $(ls ${COMPANY_DIR}/configs/*); do
-    config_file=$(echo $(basename ${i}))
-    build_dir=$(echo $(basename ${i}) |sed s%"_defconfig"%''%g);
-    if [ ! -d ${OUTPUT_DIR}/${build_dir} ]; then
-      BR2_EXTERNAL=${COMPANY_DIR}/package/ make ${config_file} O=${OUTPUT_DIR}/${build_dir}
+  mkdir -p ${OUTPUT_DIR_BASE}
+  mkdir -p ${COMPANY_DIR}/dl
+  for i in configs/*_defconfig; do
+    config_file=$(basename "${i}")
+    build_dir_name=$(basename "${i}" |sed s%"_defconfig"%''%g);
+    build_dir="${OUTPUT_DIR_BASE}/${build_dir_name}"
+    if [ ! -d "${build_dir}" ]; then
+      # `O=${build_dir}` must come last!
+      echo "######## Applying ${config_file} ########"
+      BR2_EXTERNAL=${COMPANY_DIR}/package/ ${MAKE_COMMAND} "${config_file}" O="${build_dir}"
     fi
   done
 }
 
 
+# Build everything under ${COMPANY_NAME}/configs
+build_all(){
+  for i in ${OUTPUT_DIR_BASE}/; do
+    cd ${i};
+    echo "######## Building ${i} ########"
+    ${MAKE_COMMAND}
+    echo "######## Finished building ${i} ########"
+  done
+  exit 0
+}
+
+
+# Remove all directories in ${COMPANY_NAME}/output/.
+clean_all() {
+  cd ${BR_DIR}
+  echo "######## Removing all directories in ${OUTPUT_DIR_BASE} ########"
+  rm -rf "${OUTPUT_DIR_BASE:?}/"*
+}
+
+
+# Parse the BUILD_LIST environment variable and build each config in the list.
+build_from_list(){
+  for i in $(echo "${BUILD_LIST}" | sed "s%,% %g"  |sed 's%"%%g'); do
+    echo "######## Building ${OUTPUT_DIR_BASE}/${i} ########"
+    cd "${OUTPUT_DIR_BASE}/${i}"
+    ${MAKE_COMMAND}
+    echo "######## Finished building ${i} ########"
+  done
+  exit 0
+}
+
+# CLEAN_ALL, BUILD_ALL, and BUILD_LIST are set in the docker/env file.
 main() {
-  sleep 2
+  if [ "${CLEAN_ALL}" == "1" ]; then
+    clean_all
+  fi
   apply_configs
+
+  if [ "${BUILD_ALL}" == "1" ]; then
+    build_all
+  fi
+
+  if [ "${BUILD_LIST}" != "" ]; then
+    build_from_list
+  fi
 }
 
 main "${@}"
+# This keeps the docker image from exiting.
 exec /bin/bash
 exit 0

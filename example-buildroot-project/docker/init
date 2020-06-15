@@ -6,9 +6,9 @@ COMPANY_NAME="my_company"
 COMPANY_DIR="${BR_DIR}/${COMPANY_NAME}"
 OUTPUT_DIR_BASE="${COMPANY_DIR}/output"
 
-# Set VERBOSE in docker/env
+# Set BR_VERBOSE in docker/env
 MAKE_COMMAND="brmake"
-if [ "${VERBOSE}" == "1" ]; then
+if [ "${BR_VERBOSE}" == "1" ]; then
   MAKE_COMMAND="make"
 fi
 
@@ -80,7 +80,7 @@ main() {
     build_all
   fi
 
-  if [ "${BUILD_LIST}" != "" ]; then
+  if [ -n "${BUILD_LIST}" ]; then
     build_from_list
   fi
 }

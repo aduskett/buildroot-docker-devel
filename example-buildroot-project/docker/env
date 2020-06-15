@@ -1,5 +1,7 @@
 # Build verbosely
-VERBOSE=0
+# BR_ is appended to verbose to avoid environment conflicts with packages that
+# may use the VERBOSE environment variable.
+BR_VERBOSE=0
 
 # Remove everything in my_company/output and start fresh.
 CLEAN_ALL=1

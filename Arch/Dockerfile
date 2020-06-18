@@ -5,37 +5,29 @@ LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Container with everything needed to run Buildroot"
 
 # Install dependencies
-RUN pacman -Syu --noconfirm
-RUN pacman -S --noconfirm \
+RUN pacman -Syu --noconfirm \
+  base-devel \
   bc \
-  bison \
   bzip2 \
   cmake \
   cpio \
   dialog \
   expect \
-  file \
-  flex \
-  gcc \
   git \
-  make \
   mc \
   nano \
-  patch \
-  sudo \
+  python-nose2 \
+  python-pexpect \
+  python-pip \
   rsync \
   svn \
   unzip \
   wget \
-  which \
   xz
 
 RUN set -e; \
-  pacman -S --noconfirm python-pip; \
   pip3 install -U pip --prefix=/usr; \
   pip3 install \
-  nose2==0.9.2 \
-  pexpect==4.8.0 \
   spdx_lookup==0.3.2;
 
 RUN set -e; \

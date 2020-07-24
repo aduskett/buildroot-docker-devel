@@ -46,14 +46,6 @@ RUN set -e; \
   glibc.i686
 
 RUN set -e; \
-  dnf install -y python2-pip; \
-  pip2 install -U pip --prefix=/usr; \
-  pip2 install \
-  nose2==0.9.2 \
-  pexpect==4.8.0 \
-  spdx_lookup==0.3.2;
-
-RUN set -e; \
   dnf reinstall -y python3-pip; \
   pip3 install -U pip --prefix=/usr; \
   pip3 install \

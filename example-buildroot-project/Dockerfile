@@ -70,9 +70,12 @@ RUN set -e; \
 ARG BUILDROOT_USER
 ARG BUILDROOT_DIR
 ARG BUILDROOT_PATCH_DIR
+ARG UID
+ARG GID
 # Add the ${BUILDROOT_USER} user, as buildroot should never be built as root.
 RUN set -e; \
-  useradd -ms /bin/bash ${BUILDROOT_USER}; \
+  groupadd -r -g ${GID} ${BUILDROOT_USER}; \
+  useradd -ms /bin/bash -u ${UID} -g ${GID} ${BUILDROOT_USER}; \
   usermod -aG wheel ${BUILDROOT_USER}; \
   echo "alias ls='ls --color=auto'" >> /home/${BUILDROOT_USER}/.bashrc; \
   echo "PS1='\u@\H [\w]$ '" >> /home/${BUILDROOT_USER}/.bashrc; \
@@ -94,14 +97,11 @@ RUN set -e; \
 
 # Perform the following:
 # - Pre-emtpively create the ccache diretory for permission purposes.
-# - Remove the stock configs and board directory from buildroot.
 # - Link company_name/{board,configs,dl} to the base buildroot directory.
-# These changes bypass the need to modify buildroot, and allows keeping
-# company_name specific configs, downloads, and board files in the company_name directory.
 ARG COMPANY_NAMES
 RUN set -e; \
-  mkdir -p /home/${BUILDROOT_USER}/ccache; \
-  chown -R ${BUILDROOT_USER}:${BUILDROOT_USER} /home/${BUILDROOT_USER}/ccache; \
+  mkdir -p /home/ccache; \
+  chown -R ${BUILDROOT_USER}:${BUILDROOT_USER} /home/ccache; \
   mkdir -p /tmp/patches; \
   for COMPANY_NAME in ${COMPANY_NAMES}; do \
     ln -s /mnt/${COMPANY_NAME} ${COMPANY_NAME}; \

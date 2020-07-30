@@ -61,6 +61,11 @@ If manually-building:
 ## Changing the buildroot user name
   - Edit the BUILDROOT_USER variable in the docker/env and docker-compose.yml files.
 
+## Changing the buildroot UID and GID
+  - The default UID and GID for the buildroot user is 1000, however you may customize the default by either:
+    - modifying the docker-compose.yml file directly.
+    - passing the UID and GID directly from the command line. IE: `docker-compose build --build-arg UID=$(id -u $(whoami)) --build-arg GID=$(id -g $(whoami))`
+
 ## Changing the buildroot directory name
   - Edit the BUILDROOT_DIR variable in the docker/env and docker-compose.yml files.
 

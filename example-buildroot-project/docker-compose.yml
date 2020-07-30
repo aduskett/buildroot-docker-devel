@@ -8,6 +8,8 @@ services:
          BUILDROOT_DIR: buildroot
          COMPANY_NAMES: my_company my_other_company
          BUILDROOT_PATCH_DIR: ""
+         UID: 1000
+         GID: 1000
     env_file:
       - docker/env
     privileged: true
@@ -15,7 +17,7 @@ services:
     tty: true
     volumes:
       - ./:/mnt
-      - example-buildroot-project-build-ccache:/home/br-user/ccache
+      - example-buildroot-project-build-ccache:/home/ccache
     image: example-buildroot-project-build:latest
     container_name:  example-buildroot-project-build
 volumes:

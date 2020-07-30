@@ -30,11 +30,6 @@ This directory has the following structure:
           - The init-script applies each config file found in my_company/configs to output/config_name, and then the source code is built in that directory.
         - package:
           - Any external packages not in stock Buildroot go here.
-        - patches:
-          - buildroot:
-            - Patches to apply to the buildroot directory. It usually contains package updates or modifications from upstream.
-          - linux:
-            - Patches to apply to the linux kernel.
         - production:
           - Once built, production images go here.
   - scripts
@@ -61,11 +56,33 @@ If manually-building:
   - Then navigate to `/home/br-user/buildroot/` and build manually. If `AUTO_CONFIG` is set to 1
     in docker/env, then there are directories automatically created in `/home/br-user/buildroot/my_company/output`
 
+# Customizations
+
+## Changing the buildroot user name
+  - Edit the BUILDROOT_USER variable in the docker/env and docker-compose.yml files.
+
+## Changing the buildroot directory name
+  - Edit the BUILDROOT_DIR variable in the docker/env and docker-compose.yml files.
+
 ## Changing the my_company directory name
   - Move the my_company directory to the name of your choice, IE: new_company
   - Run the following:
     - `for i in $(grep -RIwsl 'my_company' .); do sed s%my_company%new_company%g -i ${i}; done`
     - `sed s%example-buildroot-project-build%new_company%g -i docker-compose.yml`
+
+## Adding patches to buildroot
+  - Add a directory to the BUILDROOT_PATCH_DIR argument in the docker-compose.yml file.
+    Patches are automatically copied and applied to buildroot when `docker-compose build` is ran.
+
+## Adding additional companies
+  - Add additional companies by copying the my_company directory to a new directory and adding the company name to the
+    COMPANY_NAMES variable in the docker-compose.yml file nad the docker/env file.
+    Both variables are SPACE DELIMITED!
+
+## Updating Buildroot
+  - Download the buildroot tarball from https://buildroot.org/download.html and replace buildroot.tar.gz with the downloaded tarball.
+  - run `docker-compose build`
+  Note: If you have a BUILDROOT_PATCH_DIR defined, watch for failures during the build process to ensure that all patches applied cleanly!
 
 ## Further reading
 Please check [The Buildroot manual](https://buildroot.org/downloads/manual/manual.html) for more information.

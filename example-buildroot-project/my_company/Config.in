@@ -1,0 +1,4 @@
+# See https://buildroot.org/downloads/manual/manual.html#customize
+menu "External packages"
+endmenu
+

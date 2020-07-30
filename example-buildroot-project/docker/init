@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-BR_DIR=/home/br-user/buildroot
-COMPANY_NAME="my_company"
-COMPANY_DIR="${BR_DIR}/${COMPANY_NAME}"
-OUTPUT_DIR_BASE="${COMPANY_DIR}/output"
+BUILDROOT_USER=${BUILDROOT_USER:-br-user}
+COMPANY_NAMES=${COMPANY_NAMES:-my_company}
+BUILDROOT_DIR=${BUILDROOT_DIR:-buildroot}
+BR_DIR="/home/${BUILDROOT_USER}/${BUILDROOT_DIR}"
 
 # Set BR_VERBOSE in docker/env
 MAKE_COMMAND="brmake"
@@ -22,51 +22,79 @@ fi
 #
 # Note: There is no need to check for errors, as `set -e` is set on line 3.
 apply_configs() {
-  cd ${BR_DIR}
-  mkdir -p ${OUTPUT_DIR_BASE}
-  mkdir -p ${COMPANY_DIR}/dl
-  for i in configs/*_defconfig; do
-    config_file=$(basename "${i}")
-    build_dir_name=$(basename "${i}" |sed s%"_defconfig"%''%g);
-    build_dir="${OUTPUT_DIR_BASE}/${build_dir_name}"
-    if [ ! -d "${build_dir}" ]; then
-      # `O=${build_dir}` must come last!
-      echo "######## Applying ${config_file} ########"
-      BR2_EXTERNAL=${COMPANY_DIR}/package/ ${MAKE_COMMAND} "${config_file}" O="${build_dir}"
-    fi
+  cd "${BR_DIR}"
+  for company_name in ${COMPANY_NAMES}; do
+    company_dir="${BR_DIR}/${company_name}"
+    company_dir_configs="${company_dir}/configs"
+    output_dir_base="${BR_DIR}/${company_name}/output"
+
+    mkdir -p "${output_dir_base}"
+    mkdir -p "${company_dir}/dl"
+    for i in "${company_dir_configs}"/*_defconfig; do
+      export BR2_EXTERNAL=${company_dir}/
+      export BR2_DL_DIR=${company_dir}/dl
+      config_file=$(basename "${i}")
+      build_dir_name=$(basename "${i}" |sed s%"_defconfig"%''%g);
+      build_dir="${output_dir_base}/${build_dir_name}"
+      if [ ! -d "${build_dir}" ]; then
+        # `O=${build_dir}` must come last!
+        echo "######## Applying ${config_file} ########"
+        ${MAKE_COMMAND} "${config_file}" O="${build_dir}"
+      fi
+    done
   done
 }
 
 
-# Build everything under ${COMPANY_NAME}/configs
+# Build all config files in each company configs directory.
 build_all(){
-  for i in ${OUTPUT_DIR_BASE}/; do
-    cd ${i};
-    echo "######## Building ${i} ########"
-    ${MAKE_COMMAND}
-    echo "######## Finished building ${i} ########"
+  for company_name in ${COMPANY_NAMES}; do
+    output_dir_base="${BR_DIR}/${company_name}/output"
+    for i in "${output_dir_base}"/*; do
+      cd "${i}";
+      echo "######## Building ${i} ########"
+      ${MAKE_COMMAND}
+      echo "######## Finished building ${i} ########"
+    done
   done
-  exit 0
+  if [[ "${EXIT_AFTER_BUILD}" == 1 ]]; then
+    exit 0
+  fi
 }
 
 
-# Remove all directories in ${COMPANY_NAME}/output/.
+# Clean all directories in each company build directory.
 clean_all() {
-  cd ${BR_DIR}
-  echo "######## Removing all directories in ${OUTPUT_DIR_BASE} ########"
-  rm -rf "${OUTPUT_DIR_BASE:?}/"*
+  for company_name in ${COMPANY_NAMES}; do
+    output_dir_base="${BR_DIR}/${company_name}/output"
+    for i in $(find "${output_dir_base}" -maxdepth 1 -type d ! -path "${output_dir_base}"); do
+      if [ -d "${i}" ]; then
+        cd "${i}";
+        echo "######## cleaning ${i} ########"
+        make clean
+        echo "######## Finished cleaning ${i} ########"
+      fi
+    done
+  done
 }
 
 
 # Parse the BUILD_LIST environment variable and build each config in the list.
 build_from_list(){
-  for i in $(echo "${BUILD_LIST}" | sed "s%,% %g"  |sed 's%"%%g'); do
-    echo "######## Building ${OUTPUT_DIR_BASE}/${i} ########"
-    cd "${OUTPUT_DIR_BASE}/${i}"
-    ${MAKE_COMMAND}
-    echo "######## Finished building ${i} ########"
+  for company_name in ${COMPANY_NAMES}; do
+    output_dir_base="${BR_DIR}/${company_name}/output"
+    for i in ${BUILD_LIST}; do
+      if [ -d "${output_dir_base}/${i}" ]; then
+        echo "######## Building ${output_dir_base}/${i} ########"
+        cd "${output_dir_base}/${i}"
+        ${MAKE_COMMAND}
+        echo "######## Finished building ${i} ########"
+      fi
+    done
   done
-  exit 0
+  if [[ "${EXIT_AFTER_BUILD}" == 1 ]]; then
+    exit 0
+  fi
 }
 
 # CLEAN_ALL, BUILD_ALL, and BUILD_LIST are set in the docker/env file.

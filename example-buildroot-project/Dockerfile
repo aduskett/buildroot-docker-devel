@@ -1,11 +1,14 @@
 FROM centos:8
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Everything needed to build Buildroot in a reproducable manner."
-ENV COMPANY_NAME=my_company
 
 # Install dependencies
 RUN dnf update -y; \
   dnf install -y epel-release; \
+  dnf install -y dnf-plugins-core; \
+  dnf config-manager --set-enabled PowerTools;
+
+RUN set -e; \
   dnf install -y \
   bash \
   bc \
@@ -21,11 +24,18 @@ RUN dnf update -y; \
   gcc \
   gcc-c++ \
   git \
+  glibc-devel.i686 \
+  glibc.i686 \
+  help2man \
+  libatomic \
+  libgcc.i686 \
   libstdc++-devel \
+  libstdc++-devel.i686 \
   make \
   mc \
   nano \
   ncurses-devel \
+  ncurses-devel.i686 \
   patch \
   perl-Data-Dumper \
   perl-ExtUtils-MakeMaker \
@@ -34,50 +44,53 @@ RUN dnf update -y; \
   sudo \
   svn \
   tar \
+  texinfo \
   unzip \
   vim \
   wget \
   which \
   xz \
-  glibc-devel.i686 \
-  libgcc.i686 \
-  libstdc++-devel.i686 \
-  ncurses-devel.i686 \
+  xz-lzma-compat \
   zlib.i686 \
-  glibc.i686 \
   python2-pip python3-pip; \
-  pip2 install -U pip==20.1.1 --prefix=/usr; \
+  pip2 install -U pip==20.2 --prefix=/usr; \
   pip2 install \
   nose2==0.9.2 \
   pexpect==4.8.0 \
   spdx_lookup==0.3.2; \
-  dnf --enablerepo=PowerTools install -y xz-lzma-compat; \
   rm /etc/localtime; \
   ln -s /usr/share/zoneinfo/America/Los_Angeles /etc/localtime;
 
-# Add the br-user user, as buildroot should never be built as root.
+# Set these arguments in the docker-compose.yml file and the docker/env file
+# if you wish to change the default values.
+# Default values:
+# BUILDROOT_USER: br-user
+# BUILDROOT_DIR: buildroot
+# The buildroot source code is extracted to /home/${BUILDROOT_USER}/{BUILDROOT_DIR}
+ARG BUILDROOT_USER
+ARG BUILDROOT_DIR
+ARG BUILDROOT_PATCH_DIR
+# Add the ${BUILDROOT_USER} user, as buildroot should never be built as root.
 RUN set -e; \
-  useradd -ms /bin/bash br-user; \
-  usermod -aG wheel br-user; \
-  echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc; \
-  echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc; \
-  chown -R br-user:br-user /home/br-user; \
-  mkdir -p /tmp/patches/buildroot;
+  useradd -ms /bin/bash ${BUILDROOT_USER}; \
+  usermod -aG wheel ${BUILDROOT_USER}; \
+  echo "alias ls='ls --color=auto'" >> /home/${BUILDROOT_USER}/.bashrc; \
+  echo "PS1='\u@\H [\w]$ '" >> /home/${BUILDROOT_USER}/.bashrc; \
+  chown -R ${BUILDROOT_USER}:${BUILDROOT_USER} /home/${BUILDROOT_USER};
 
-COPY --chown=br-user:br-user buildroot/ /home/br-user/buildroot
-COPY ${COMPANY_NAME}/patches/buildroot/*.diff /tmp/patches/buildroot/
-COPY --chown=br-user:br-user docker/init /init
+COPY --chown=${BUILDROOT_USER}:${BUILDROOT_USER} buildroot.tar.gz/ /home/${BUILDROOT_USER}/
 
-# Ensure that any patches held in company_name/patches/buildroot are applied.
-# This ensures that relevant upstream patches cherry-picked from
-# https://patchwork.ozlabs.org/project/buildroot/list/ are applied during the
-# docker build process.
-WORKDIR /home/br-user/buildroot
+RUN set -e; \
+  mkdir -p /home/${BUILDROOT_USER}/${BUILDROOT_DIR}; \
+  tar -zxf /home/${BUILDROOT_USER}/buildroot.tar.gz --strip-components=1 -C /home/${BUILDROOT_USER}/${BUILDROOT_DIR}; \
+  chown -R ${BUILDROOT_USER}:${BUILDROOT_USER} /home/${BUILDROOT_USER}/${BUILDROOT_DIR}; \
+  rm -rf /home/${BUILDROOT_USER}/buildroot.tar.gz;
+
+# Copy brmake to /usr/bin for non-verbose builds.
+WORKDIR /home/${BUILDROOT_USER}/${BUILDROOT_DIR}
 RUN set -e; \
   cp utils/brmake /usr/bin/brmake; \
-  chmod +x /usr/bin/brmake; \
-  for i in /tmp/patches/buildroot/*.diff; do patch -p1 < "${i}"; done; \
-  rm -rf /tmp/patches/buildroot/;
+  chmod +x /usr/bin/brmake;
 
 # Perform the following:
 # - Pre-emtpively create the ccache diretory for permission purposes.
@@ -85,19 +98,33 @@ RUN set -e; \
 # - Link company_name/{board,configs,dl} to the base buildroot directory.
 # These changes bypass the need to modify buildroot, and allows keeping
 # company_name specific configs, downloads, and board files in the company_name directory.
+ARG COMPANY_NAMES
 RUN set -e; \
-  mkdir -p /home/br-user/ccache; \
-  chown -R br-user:br-user /home/br-user/ccache; \
-  rm -rf configs; \
-  rm -rf board; \
-  ln -s /mnt/${COMPANY_NAME} ${COMPANY_NAME}; \
-  ln -s ${COMPANY_NAME}/board board; \
-  ln -s ${COMPANY_NAME}/configs configs; \
-  ln -s ${COMPANY_NAME}/dl dl;
+  mkdir -p /home/${BUILDROOT_USER}/ccache; \
+  chown -R ${BUILDROOT_USER}:${BUILDROOT_USER} /home/${BUILDROOT_USER}/ccache; \
+  mkdir -p /tmp/patches; \
+  for COMPANY_NAME in ${COMPANY_NAMES}; do \
+    ln -s /mnt/${COMPANY_NAME} ${COMPANY_NAME}; \
+  done;
 
-USER br-user
-ENV HOME /home/br-user
-WORKDIR /home/br-user/buildroot
+# Ensure that any patches held in company_name/patches/buildroot are applied.
+# This ensures that relevant upstream patches cherry-picked from
+# https://patchwork.ozlabs.org/project/buildroot/list/ are applied during the
+# docker build process.
+
+COPY ${BUILDROOT_PATCH_DIR}* /tmp/patches/
+RUN set -e; \
+  cd  /home/${BUILDROOT_USER}/${BUILDROOT_DIR}; \
+  if [ -n "${BUILDROOT_PATCH_DIR}" ]; then \
+    for i in $(find /tmp/patches/ -name "*.patch" -exec readlink -f {} \; ); do patch -p1 < "${i}"; done; \
+  fi; \
+  rm -rf ${BUILDROOT_PATCH_DIR};
+
+COPY --chown=${BUILDROOT_USER}:${BUILDROOT_USER} docker/init /init
+
+USER ${BUILDROOT_USER}
+ENV HOME /home/${BUILDROOT_USER}
+WORKDIR /home/${BUILDROOT_USER}/${BUILDROOT_DIR}
 
 ENTRYPOINT ["/init"]
 CMD ["/bin/bash"]

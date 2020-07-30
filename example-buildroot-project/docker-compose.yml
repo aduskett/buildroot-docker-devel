@@ -3,6 +3,11 @@ services:
    example-buildroot-project-build:
     build:
       context: ./
+      args:
+         BUILDROOT_USER: br-user
+         BUILDROOT_DIR: buildroot
+         COMPANY_NAMES: my_company my_other_company
+         BUILDROOT_PATCH_DIR: ""
     env_file:
       - docker/env
     privileged: true

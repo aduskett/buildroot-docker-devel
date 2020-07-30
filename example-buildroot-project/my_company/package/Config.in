@@ -1,4 +1,0 @@
-menu "System packages"
-source "$BR2_EXTERNAL_MY_COMPANY_PATH/open-plc-utils-updated/Config.in"
-endmenu
-

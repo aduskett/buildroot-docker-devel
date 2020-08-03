@@ -5,6 +5,7 @@ BUILDROOT_USER=br-user
 BUILDROOT_DIR=buildroot
 
 # A space deliminated string of company names.
+# WARNING: DO NOT ADD QUOTES AROUND THIS STRING.
 COMPANY_NAMES=my_company
 
 # Build verbosely
@@ -19,6 +20,7 @@ CLEAN_ALL=0
 BUILD_ALL=0
 
 # A space seperated list of configs to build.
+# WARNING: DO NOT ADD QUOTES AROUND THIS STRING.
 BUILD_LIST=my_company
 
 

@@ -6,7 +6,7 @@ services:
       args:
          BUILDROOT_USER: br-user
          BUILDROOT_DIR: buildroot
-         COMPANY_NAMES: my_company my_other_company
+         COMPANY_NAMES: my_company
          BUILDROOT_PATCH_DIR: ""
          UID: 1000
          GID: 1000

@@ -87,6 +87,9 @@ build_from_list(){
       if [ -d "${output_dir_base}/${i}" ]; then
         echo "######## Building ${output_dir_base}/${i} ########"
         cd "${output_dir_base}/${i}"
+        company_dir="${BR_DIR}/${company_name}"
+        export BR2_EXTERNAL=${company_dir}/
+        export BR2_DL_DIR=${company_dir}/dl
         ${MAKE_COMMAND}
         echo "######## Finished building ${i} ########"
       fi

@@ -100,8 +100,8 @@ RUN set -e; \
 # - Link company_name/{board,configs,dl} to the base buildroot directory.
 ARG COMPANY_NAMES
 RUN set -e; \
-  mkdir -p /home/ccache; \
-  chown -R ${BUILDROOT_USER}:${BUILDROOT_USER} /home/ccache; \
+  mkdir -p /home/${BUILDROOT_USER}/ccache; \
+  chown -R ${BUILDROOT_USER}:${BUILDROOT_USER} /home/${BUILDROOT_USER}/ccache; \
   mkdir -p /tmp/patches; \
   for COMPANY_NAME in ${COMPANY_NAMES}; do \
     ln -s /mnt/${COMPANY_NAME} ${COMPANY_NAME}; \

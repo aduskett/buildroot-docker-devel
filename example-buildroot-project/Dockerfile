@@ -1,16 +1,31 @@
-FROM centos:8
+FROM ubuntu:focal
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Everything needed to build Buildroot in a reproducable manner."
 
-# Install dependencies
-RUN dnf update -y; \
-  dnf install -y epel-release; \
-  dnf install -y dnf-plugins-core; \
-  dnf config-manager --set-enabled PowerTools;
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV TZ=US/Pacific
 
 RUN set -e; \
-  dnf install -y \
-  bash \
+  apt-get update; \
+  apt-get install -y apt-utils; \
+  apt-get upgrade -y; \
+  apt-get install -y locales;
+
+RUN set -e; \
+  rm -rf /var/lib/apt/lists/*; \
+  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+
+# Setup tzdata first as to avoid a dialog requesting tzdata setup.
+RUN set -e; \
+  apt-get update; \
+  apt-get install -y tzdata; \
+  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime; \
+  echo $TZ > /etc/timezone;
+
+# Install dependencies
+RUN set -e; \
+  apt-get upgrade -y; \
+  apt-get install -y \
   bc \
   bison \
   bzip2 \
@@ -21,45 +36,34 @@ RUN set -e; \
   expect \
   file \
   flex \
+  g++ \
   gcc \
-  gcc-c++ \
   git \
-  glibc-devel.i686 \
-  glibc.i686 \
-  help2man \
-  libatomic \
-  libgcc.i686 \
-  libstdc++-devel \
-  libstdc++-devel.i686 \
+  lib32z1 \
   make \
   mc \
+  mercurial \
   nano \
-  ncurses-devel \
-  ncurses-devel.i686 \
+  ncurses-dev \
   patch \
-  perl-Data-Dumper \
-  perl-ExtUtils-MakeMaker \
-  perl-Thread-Queue \
+  python-dev \
+  python3-dev \
+  python3-pip \
   rsync \
+  subversion \
   sudo \
-  svn \
   tar \
-  texinfo \
   unzip \
-  vim \
   wget \
-  which \
-  xz \
-  xz-lzma-compat \
-  zlib.i686 \
-  python2-pip python3-pip; \
-  pip2 install -U pip==20.2 --prefix=/usr; \
-  pip2 install \
+  gcc-multilib \
+  g++-multilib \
+  libc6-i386
+
+RUN set -e; \
+  pip3 install \
   nose2==0.9.2 \
   pexpect==4.8.0 \
-  spdx_lookup==0.3.2; \
-  rm /etc/localtime; \
-  ln -s /usr/share/zoneinfo/America/Los_Angeles /etc/localtime;
+  spdx_lookup==0.3.3;
 
 # Set these arguments in the docker-compose.yml file and the docker/env file
 # if you wish to change the default values.
@@ -76,7 +80,6 @@ ARG GID
 RUN set -e; \
   groupadd -r -g ${GID} ${BUILDROOT_USER}; \
   useradd -ms /bin/bash -u ${UID} -g ${GID} ${BUILDROOT_USER}; \
-  usermod -aG wheel ${BUILDROOT_USER}; \
   echo "alias ls='ls --color=auto'" >> /home/${BUILDROOT_USER}/.bashrc; \
   echo "PS1='\u@\H [\w]$ '" >> /home/${BUILDROOT_USER}/.bashrc; \
   chown -R ${BUILDROOT_USER}:${BUILDROOT_USER} /home/${BUILDROOT_USER};

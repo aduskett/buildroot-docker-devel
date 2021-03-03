@@ -6,8 +6,12 @@ services:
       args:
          BUILDROOT_USER: br-user
          BUILDROOT_DIR: buildroot
-         COMPANY_NAMES: my_company
-         BUILDROOT_PATCH_DIR: ""
+         BUILDROOT_VERSION: 2021.02.0
+         # BUILDROOT_VERSION: git
+         # BUILDROOT_BRANCH: master
+         # Space deliminated list of external trees of which to use.
+         EXTERNAL_TREES: external
+         # BUILDROOT_PATCH_DIR: "external/patches/buildroot/"
          UID: 1000
          GID: 1000
     env_file:

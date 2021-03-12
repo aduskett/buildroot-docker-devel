@@ -3,6 +3,7 @@ import os
 import sys
 import argparse
 import signal
+from typing import List
 from lib.init_parse import InitParse
 
 
@@ -41,15 +42,25 @@ def main(args=None):
     cwd = os.getcwd()
     signal.signal(signal.SIGINT, signal_handler)
     args = parse_args(args)
-    env_files = args.env_files.split(":")
+    env_files: List[str] = args.env_files.split(":")
+    init = None
     for env_file in env_files:
         if not os.path.isfile(env_file):
             print("{}: No such file".format(env_file))
-            exit(1)
+            sys.exit(1)
+    if not env_files:
+        print("No environment files defined!")
+        sys.exit(1)
     for env_file in env_files:
         init = InitParse(env_file)
-        init.run()
+        if not init.run():
+            sys.exit(1)
         os.chdir(cwd)
+    if init:
+        if init.exit:
+            print("######## Exiting ########")
+            sys.exit(2)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

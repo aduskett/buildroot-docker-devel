@@ -163,51 +163,59 @@ class InitParse:
             )
         os.chdir(self.buildroot_path)
 
-    def apply_configs(self) -> None:
+    def apply_config(self, config: Dict[str, Union[str, bool]]) -> bool:
         """Apply all configs defined in env.json."""
-        for config in self.env["configs"]:
-            self.fragments.clear()
-            self._parse_config_settings(config)
-            Dirs.exists(self.buildroot_path, fail=True)
-            Dirs.exists(self.output_dir, make=True, fail=True)
-            dl_dir = Buildroot.parse_defconfig(
-                "BR2_DL_DIR", self.defconfig_path, self.buildroot_path
+        self.fragments.clear()
+        self._parse_config_settings(config)
+        Dirs.exists(self.buildroot_path, fail=True)
+        Dirs.exists(self.output_dir, make=True, fail=True)
+        dl_dir = Buildroot.parse_defconfig(
+            "BR2_DL_DIR", self.defconfig_path, self.buildroot_path
+        )
+        if not dl_dir:
+            dl_dir = "{}/{}/dl".format(self.buildroot_path, self.external_trees)
+        if not Dirs.exists(dl_dir, make=True, fail=True):
+            return False
+
+        if not Dirs.exists(self.build_path):
+            cmd = "BR2_EXTERNAL={}/{} BR2_DL_DIR={} BR2_DEFCONFIG={} {} {} O={}".format(
+                self.buildroot_path,
+                self.external_trees,
+                dl_dir,
+                self.defconfig_path,
+                self.make,
+                self.defconfig,
+                self.build_path,
             )
-            if not dl_dir:
-                dl_dir = "{}/{}/dl".format(self.buildroot_path, self.external_trees)
-            Dirs.exists(dl_dir, make=True, fail=True)
+            os.chdir(self.buildroot_path)
+            self.__print_step("Applying {}".format(self.defconfig_path))
+            retval = os.system(cmd)
+            if retval != 0:
+                print("ERROR: Failed to apply {}".format(self.defconfig_path))
+                return False
+            if self.fragments:
+                self.__apply_fragments()
+        return True
 
-            if not Dirs.exists(self.build_path):
-                cmd = "BR2_EXTERNAL={}/{} BR2_DL_DIR={} BR2_DEFCONFIG={} {} {} O={}".format(
-                    self.buildroot_path,
-                    self.external_trees,
-                    dl_dir,
-                    self.defconfig_path,
-                    self.make,
-                    self.defconfig,
-                    self.build_path,
-                )
-                os.chdir(self.buildroot_path)
-                self.__print_step("Applying {}".format(self.defconfig_path))
-                os.system(cmd)
-                if self.fragments:
-                    self.__apply_fragments()
-
-    def clean_all(self) -> None:
+    def clean_config(self, config: Dict[str, Union[str, bool]]) -> bool:
         """Clean all configs that have the clean boolean set to true."""
-        for config in self.env["configs"]:
-            self._parse_config_settings(config)
-            if self.remove:
-                if Dirs.exists(self.build_path):
-                    self.__print_step("Removing directory {}".format(self.build_path))
-                    Dirs.remove(self.build_path)
-            elif self.clean:
-                if Dirs.exists(self.build_path):
-                    os.chdir(self.build_path)
-                    cmd = "{} clean".format(self.make)
-                    self.__print_step("Cleaning {}".format(self.defconfig))
-                    os.system(cmd)
-                    os.chdir(self.buildroot_path)
+        self._parse_config_settings(config)
+        if self.remove:
+            if Dirs.exists(self.build_path):
+                self.__print_step("Removing directory {}".format(self.build_path))
+                return Dirs.remove(self.build_path)
+        elif self.clean:
+            if Dirs.exists(self.build_path):
+                os.chdir(self.build_path)
+                cmd = "{} clean".format(self.make)
+                self.__print_step("Cleaning {}".format(self.defconfig))
+                retval = os.system(cmd)
+                if retval != 0:
+                    print("ERROR: Failed to clean {}".format(self.defconfig_path))
+                    return False
+                os.chdir(self.buildroot_path)
+                return True
+        return True
 
     def update_buildroot(self) -> Union[bool, int]:
         """Update buildroot if set to true."""
@@ -234,30 +242,41 @@ class InitParse:
             "/home/{}/buildroot".format(self.user),
         )[1]
 
-    def build_all(self):
+    def build_config(self, config: Dict[str, Union[str, bool]]) -> bool:
         """Build all configs that have the build attribute set to true in env.json"""
-        for config in self.env["configs"]:
-            self._parse_config_settings(config)
-            if self.build:
-                os.chdir(self.build_path)
-                self.__print_step("Building {}".format(self.defconfig))
-                os.system(self.make)
-            else:
-                self.__print_step("{}: Skip build step".format(self.defconfig))
+        self._parse_config_settings(config)
+        if self.build:
+            os.chdir(self.build_path)
+            self.__print_step("Building {}".format(self.defconfig))
+            retval = os.system(self.make)
+            if retval != 0:
+                print("ERROR: Failed to build {}".format(self.defconfig_path))
+                return False
+        else:
+            self.__print_step("{}: Skip build step".format(self.defconfig))
+        return True
 
-    def run(self) -> None:
+    def run(self) -> bool:
         """Run all the steps."""
         self._parse_env()
+        self.update_buildroot()
         self.buildroot_path: str = "/home/{}/buildroot".format(self.user)
         for config in self.env["configs"]:
             self._parse_config_settings(config)
             if self.skip:
                 self.__print_step("Skipping {}".format(self.defconfig))
                 continue
-            self.clean_all()
-            self.apply_configs()
-            self.update_buildroot()
-            self.build_all()
+            if not self.clean_config(config):
+                return False
+            if not self.apply_config(config):
+                print("#")
+                return False
+        for config in self.env["configs"]:
+            if self.skip:
+                continue
+            if not self.build_config(config):
+                return False
+        return True
 
     def __init__(self, env_file: str):
         with open(env_file) as env_fd:

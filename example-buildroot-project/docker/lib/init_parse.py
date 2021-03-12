@@ -272,10 +272,10 @@ class InitParse:
                 print("#")
                 return False
         for config in self.env["configs"]:
-            if self.skip:
-                continue
-            if not self.build_config(config):
-                return False
+            skip = self.__parse_config_attr(config, "skip", bool, False)[1]
+            if not skip:
+                if not self.build_config(config):
+                    return False
         return True
 
     def __init__(self, env_file: str):

@@ -56,7 +56,7 @@ class InitParse:
             return True, default_value
         return retval, attribute_val
 
-    def __parse_paths(self, config: Dict[str, Any]) -> None:
+    def __parse_paths(self, config: Dict[str, Any]) -> bool:
         """Parse all paths from a given config."""
         defconfig = str(config["defconfig"])
         output_tree = self.__parse_config_attr(config, "output_tree", str, fail=True)[1]
@@ -87,6 +87,17 @@ class InitParse:
         if not os.path.isfile(self.defconfig_path):
             logging.error("%s: no such file!", format(self.defconfig_path))
             sys.exit(1)
+
+        self.dl_dir = Buildroot.parse_defconfig(
+            "BR2_DL_DIR", self.defconfig_path, self.buildroot_path
+        )
+        if not self.dl_dir:
+            self.dl_dir = "{}/{}/dl".format(
+                self.buildroot_path, self.external_trees.split(":")[0]
+            )
+        if not Dirs.exists(self.dl_dir, make=True, fail=True):
+            return False
+        return True
 
     def __parse_fragments(self, config: Dict[str, Any]) -> None:
         """Parse all fragments if available."""
@@ -123,7 +134,7 @@ class InitParse:
             )
         return external_tree_string[:-1]
 
-    def _parse_config_settings(self, config: Dict[str, Union[str, bool]]) -> None:
+    def _parse_config_settings(self, config: Dict[str, Union[str, bool]]) -> bool:
         self.make = "make"
         self.__parse_config_attr(config, "defconfig", str, fail=True)
         self.build = self.__parse_config_attr(config, "build", bool, True)[1]
@@ -136,9 +147,10 @@ class InitParse:
         self.config_dir_tree = self.__parse_config_attr(
             config, "config_dir_tree", str, fail=True
         )[1]
-
-        self.__parse_paths(config)
+        if not self.__parse_paths(config):
+            return False
         self.__parse_fragments(config)
+        return True
 
     def __apply_fragments(self) -> None:
         """Apply the config fragments defined in env.json for a given config.
@@ -166,22 +178,15 @@ class InitParse:
     def apply_config(self, config: Dict[str, Union[str, bool]]) -> bool:
         """Apply all configs defined in env.json."""
         self.fragments.clear()
-        self._parse_config_settings(config)
+        if not self._parse_config_settings(config):
+            return False
         Dirs.exists(self.buildroot_path, fail=True)
         Dirs.exists(self.output_dir, make=True, fail=True)
-        dl_dir = Buildroot.parse_defconfig(
-            "BR2_DL_DIR", self.defconfig_path, self.buildroot_path
-        )
-        if not dl_dir:
-            dl_dir = "{}/{}/dl".format(self.buildroot_path, self.external_trees)
-        if not Dirs.exists(dl_dir, make=True, fail=True):
-            return False
 
         if not Dirs.exists(self.build_path):
-            cmd = "BR2_EXTERNAL={}/{} BR2_DL_DIR={} BR2_DEFCONFIG={} {} {} O={}".format(
+            cmd = "BR2_EXTERNAL={}/{} BR2_DEFCONFIG={} {} {} O={}".format(
                 self.buildroot_path,
                 self.external_trees,
-                dl_dir,
                 self.defconfig_path,
                 self.make,
                 self.defconfig,
@@ -248,7 +253,8 @@ class InitParse:
         if self.build:
             os.chdir(self.build_path)
             self.__print_step("Building {}".format(self.defconfig))
-            retval = os.system(self.make)
+            cmd = "{} BR2_DL_DIR={}".format(self.make, self.dl_dir)
+            retval = os.system(cmd)
             if retval != 0:
                 print("ERROR: Failed to build {}".format(self.defconfig_path))
                 return False
@@ -289,6 +295,7 @@ class InitParse:
         self.config_dir_tree: str = ""
         self.defconfig: str = ""
         self.defconfig_path: str = ""
+        self.dl_dir: str = ""
         self.exit: bool = False
         self.external_trees: str = ""
         self.fragment_dir: str = ""

@@ -6,7 +6,7 @@ services:
       args:
          BUILDROOT_USER: br-user
          BUILDROOT_DIR: buildroot
-         BUILDROOT_VERSION: 2021.02.1
+         BUILDROOT_VERSION: 2021.02.3
          # BUILDROOT_VERSION: git
          # BUILDROOT_BRANCH: master
          # Space deliminated list of external trees of which to use.
@@ -14,8 +14,14 @@ services:
          # BUILDROOT_PATCH_DIR: "external/patches/buildroot/"
          UID: 1000
          GID: 1000
-    env_file:
-      - docker/env
+    environment:
+      - APPLY_CONFIGS
+      - CLEAN_AFTER_BUILD
+      - ENV_FILES
+      - EXIT_AFTER_BUILD
+      - NO_BUILD
+      - UPDATE_DCFC_PROGRAMS
+      - VERBOSE
     privileged: true
     stdin_open: true
     tty: true

@@ -59,9 +59,17 @@ class Buildroot:
             )
             if j_level:
                 cores = int(cores / j_level)
-            cmd += " -j{}".format(str(cores))
+                if cores < 1:
+                    cores = 1
+            cmd += " -Otarget -j{}".format(str(cores))
         if os.system(cmd) != 0:
             print("ERROR: Failed to build {}".format(config_obj["defconfig"]))
+            if config_obj["make"] == "brmake":
+                log = Files.to_buffer(
+                    "{}/br.log".format(config_obj["build_path"]), split=True
+                )
+                for line in log[-100:]:
+                    print(line)
             return False
         return True
 

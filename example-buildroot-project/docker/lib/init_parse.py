@@ -1,5 +1,4 @@
 """Init file parsing"""
-import os
 import sys
 import json
 import logging
@@ -35,7 +34,7 @@ class InitParse:
     def run(self) -> bool:
         """Run all the steps."""
         self._parse_env()
-        config = Config(self.buildroot_path)
+        config = Config(self.buildroot_path, self.apply_configs)
         if self.update:
             Buildroot.update(self.buildroot_path)
         for defconfig in self.env["configs"]:
@@ -49,28 +48,34 @@ class InitParse:
                 return False
         for defconfig in self.env["configs"]:
             config_obj = config.parse(defconfig)
-            if not config_obj["build"] or config_obj["skip"]:
+            if not config_obj["build"] or config_obj["skip"] or self.no_build:
                 Logger.print_step("{}: Skip build step".format(config_obj["defconfig"]))
                 continue
             if not Buildroot.build(config_obj):
                 return False
+            if self.clean_after_build:
+                config.clean(force=True)
         return True
 
-    def __init__(self, env_file: str):
+    def __init__(
+        self,
+        env_file: str,
+        apply_configs: bool,
+        no_build: bool,
+        clean_after_build: bool,
+    ):
         # Prevent older versions of docker from throwing an error.
-        env_file = "/mnt/docker/{}".format(env_file)
-        if not os.path.isfile(env_file):
-            logging.error("%s: no such file!", env_file)
-            sys.exit(-1)
         with open(env_file) as env_fd:
             try:
                 self.env = json.load(env_fd)
             except json.decoder.JSONDecodeError as err:
                 logging.error(str(err))
                 sys.exit(-1)
-        self.exit_after_build: bool = False
+        self.apply_configs = apply_configs
         self.user: str = "br-user"
         self.buildroot_path: str = "/home/{}/buildroot".format(self.user)
         self.fragment_dir: str = ""
         self.fragments: List[str] = []
         self.fragments = None
+        self.no_build = no_build
+        self.clean_after_build = clean_after_build

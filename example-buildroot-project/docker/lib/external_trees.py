@@ -2,6 +2,7 @@ from typing import Any, List, Dict
 from lib.json_helper import JSONHelper
 
 
+# pylint: disable=R0903
 class ExternalTrees:
     @staticmethod
     def parse(config: Dict[str, Any]) -> str:

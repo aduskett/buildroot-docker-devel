@@ -28,8 +28,7 @@ class Config:
             Logger.print_step("Applying {}".format(self.config["defconfig_path"]))
             if self.config["make"] == "make":
                 Logger.print_step(cmd)
-            retval = os.system(cmd)
-            if retval != 0:
+            if os.system(cmd):
                 print("ERROR: Failed to apply {}".format(self.config["defconfig_path"]))
                 return False
             self.fragments.apply()
@@ -48,8 +47,7 @@ class Config:
                 os.chdir(self.config["build_path"])
                 cmd = "{} clean".format(self.config["make"])
                 Logger.print_step("Cleaning {}".format(self.config["defconfig"]))
-                retval = os.system(cmd)
-                if retval != 0:
+                if os.system(cmd):
                     print(
                         "ERROR: Failed to clean {}".format(
                             self.config["defconfig_path"]
@@ -69,20 +67,22 @@ class Config:
         defconfig = str(config["defconfig"])
         output_tree = JSONHelper.parse_attr(config, "output_tree", str)[1]
         if not output_tree:
-            output_tree = self.config["external_trees"].split(":")[0]
+            output_tree = self.config["external_trees"].split(":", maxsplit=1)[0]
         output_dir_base = "{}/{}".format(self.buildroot_path, output_tree)
         output_dir_name = JSONHelper.parse_attr(
             config,
             "output_dir_name",
             str,
-            "output".format(output_dir_base),
+            "output",
         )[1]
         self.config["output_dir"] = "{}/{}".format(output_dir_base, output_dir_name)
         config_dir_name = JSONHelper.parse_attr(
             config, "config_dir_name", str, default_value="configs"
         )[1]
         if not self.config["config_dir_tree"]:
-            self.config["config_dir_tree"] = self.config["external_trees"].split(":")[0]
+            self.config["config_dir_tree"] = self.config["external_trees"].split(
+                ":", maxsplit=1
+            )[0]
         self.config["config_dir_path"] = "{}/{}/{}".format(
             self.buildroot_path, self.config["config_dir_tree"], config_dir_name
         )
@@ -117,7 +117,8 @@ class Config:
             self.config["per_package"] = True
         if not self.config["dl_dir"]:
             self.config["dl_dir"] = "{}/{}/dl".format(
-                self.buildroot_path, self.config["external_trees"].split(":")[0]
+                self.buildroot_path,
+                self.config["external_trees"].split(":", maxsplit=1)[0],
             )
         if not Dirs.exists(self.config["dl_dir"], make=True, fail=True):
             return False
@@ -133,13 +134,16 @@ class Config:
         :rtype: Union[None, Dict[str, Union[str, bool]]]
         """
         JSONHelper.parse_attr(config, "defconfig", str, fail=True)
-        verbose = True if os.environ.get("VERBOSE", "false").lower() == "true" else False
         self.config["build"] = JSONHelper.parse_attr(config, "build", bool, True)[1]
         self.config["clean"] = JSONHelper.parse_attr(config, "clean", bool, False)[1]
+        self.config["legal_info"] = JSONHelper.parse_attr(
+            config, "legal_info", bool, False
+        )[1]
         self.config["remove"] = JSONHelper.parse_attr(config, "remove", bool, False)[1]
         self.config["skip"] = JSONHelper.parse_attr(config, "skip", bool, False)[1]
         if JSONHelper.parse_attr(config, "verbose", bool, False)[1]:
             self.config["make"] = "make"
+        verbose = bool(os.environ.get("VERBOSE", "false").lower() == "true")
         if verbose:
             self.config["make"] = "make"
         self.config["config_dir_tree"] = JSONHelper.parse_attr(

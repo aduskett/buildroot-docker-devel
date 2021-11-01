@@ -6,7 +6,7 @@ services:
       args:
          BUILDROOT_USER: br-user
          BUILDROOT_DIR: buildroot
-         BUILDROOT_VERSION: 2021.02.3
+         BUILDROOT_VERSION: 2021.02.6
          # BUILDROOT_VERSION: git
          # BUILDROOT_BRANCH: master
          # Space deliminated list of external trees of which to use.
@@ -20,7 +20,6 @@ services:
       - ENV_FILES
       - EXIT_AFTER_BUILD
       - NO_BUILD
-      - UPDATE_DCFC_PROGRAMS
       - VERBOSE
     privileged: true
     stdin_open: true

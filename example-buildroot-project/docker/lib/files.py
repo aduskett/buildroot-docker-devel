@@ -50,7 +50,7 @@ class Files:
         """
         buff = ""
         try:
-            with open(file_location, "rt") as file_location_fd:
+            with open(file_location, "rt", encoding="utf-8") as file_location_fd:
                 for line in file_location_fd:
                     buff += line
             file_location_fd.close()
@@ -80,10 +80,12 @@ class Files:
         if Files.exists(file_location) and not overwrite and not append:
             raise FileExistsError(file_location + " already exists")
         try:
-            with open(file_location, open_options) as file_location_fd:
+            with open(
+                file_location, open_options, encoding="utf-8"
+            ) as file_location_fd:
                 for line in buff.splitlines():
                     file_location_fd.write(line + "\n")
             file_location_fd.close()
             return True
         except IsADirectoryError as err:
-            raise IsADirectoryError(err)
+            raise IsADirectoryError from err

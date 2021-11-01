@@ -3,6 +3,7 @@ import logging
 from typing import Any, Dict, Tuple, Union
 
 
+# pylint: disable=R0903
 class JSONHelper:
     @staticmethod
     def parse_attr(

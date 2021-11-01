@@ -1,4 +1,5 @@
 """Init file parsing"""
+import os
 import sys
 import json
 import logging
@@ -31,8 +32,27 @@ class InitParse:
         )[1]
         self.buildroot_path = "/home/{}/buildroot".format(self.user)
 
+    def __single_target(self, target: str, config: Config):
+        for defconfig in self.env["configs"]:
+            config_obj = config.parse(defconfig)
+            if target == config_obj["defconfig"].replace("_defconfig", ""):
+                # Generate the legal information first, as to ensure the tarball is in the images
+                # directory before post-image.sh is called.
+                if config_obj["legal_info"]:
+                    if not Buildroot.legal_info(config_obj):
+                        return False
+                if not Buildroot.build(config_obj):
+                    return False
+                if self.clean_after_build:
+                    config.clean(force=True)
+                return True
+        Logger.print_error("Could not find target: {}".format(target))
+        return False
+
     def run(self) -> bool:
         """Run all the steps."""
+        single_target = os.environ.get("SINGLE_TARGET", None)
+
         self._parse_env()
         config = Config(self.buildroot_path, self.apply_configs)
         if self.update:
@@ -46,11 +66,18 @@ class InitParse:
                 return False
             if not config.apply():
                 return False
+        if single_target:
+            return self.__single_target(single_target, config)
         for defconfig in self.env["configs"]:
             config_obj = config.parse(defconfig)
             if not config_obj["build"] or config_obj["skip"] or self.no_build:
                 Logger.print_step("{}: Skip build step".format(config_obj["defconfig"]))
                 continue
+            # Generate the legal information first, as to ensure the tarball is in the images
+            # directory before post-image.sh is called.
+            if config_obj["legal_info"]:
+                if not Buildroot.legal_info(config_obj):
+                    return False
             if not Buildroot.build(config_obj):
                 return False
             if self.clean_after_build:
@@ -65,7 +92,7 @@ class InitParse:
         clean_after_build: bool,
     ):
         # Prevent older versions of docker from throwing an error.
-        with open(env_file) as env_fd:
+        with open(env_file, encoding="utf-8") as env_fd:
             try:
                 self.env = json.load(env_fd)
             except json.decoder.JSONDecodeError as err:
@@ -73,6 +100,7 @@ class InitParse:
                 sys.exit(-1)
         self.apply_configs = apply_configs
         self.user: str = "br-user"
+        self.buildroot_dir_name: str = "buildroot"
         self.buildroot_path: str = "/home/{}/buildroot".format(self.user)
         self.fragment_dir: str = ""
         self.fragments: List[str] = []

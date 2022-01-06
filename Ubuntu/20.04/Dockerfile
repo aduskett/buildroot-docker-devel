@@ -65,16 +65,10 @@ RUN set -e; \
 # Python3 is needed for support/testing/run-tests
 RUN set -e; \
   apt-get install -y \ 
-  python-dev \
   python3-dev \
-  python-pip \
   python3-pip;
 
 RUN set -e; \
-  pip2 install \
-  nose2==0.9.2 \
-  pexpect==4.8.0 \
-  spdx_lookup==0.3.2; \
   pip3 install \
   nose2==0.9.2 \
   pexpect==4.8.0;

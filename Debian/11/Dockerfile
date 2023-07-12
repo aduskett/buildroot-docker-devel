@@ -1,4 +1,4 @@
-FROM debian:9
+FROM debian:bullseye
 MAINTAINER Adam Duskett <aduskett@gmail.com>
 
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
@@ -29,11 +29,13 @@ RUN set -e; \
   apt-get update; \
   apt-get upgrade -y; \
   apt-get install -y \
+  bash \
   bc \
   bison \
   bzip2 \
   cmake \
   cpio \
+  curl \
   dialog \
   expect \
   file \
@@ -42,60 +44,42 @@ RUN set -e; \
   gcc \
   git \
   lib32z1 \
-  locales \
   make \
   mc \
   mercurial \
   nano \
   ncurses-dev \
   patch \
+  python3-dev \
+  python3-pip \
   rsync \
   subversion \
   sudo \
   tar \
   unzip \
-  wget
-
-# 32-bit support.
-RUN set -e; \
-  apt-get install -y \
+  wget \
   gcc-multilib \
   g++-multilib \
-  libc6-i386
-
-# Python2 is needed for utils/scanpy
-# Python3 is needed for support/testing/run-tests
-RUN set -e; \
-  apt-get install -y \ 
-  python-dev \
-  python3-dev \
-  python-pip \
-  python3-pip;
-
-RUN set -e; \
-  pip2 install \
+  libc6-i386; \
+  pip3 install \
+  aiohttp==3.7.3 \
+  cve==1.0.1 \
+  ijson==3.1.3 \
   nose2==0.9.2 \
   pexpect==4.8.0 \
-  spdx_lookup==0.3.2; \
-  pip3 install \
-  nose2==0.9.2 \
-  pexpect==4.8.0;
+  requests==2.25.1 \
+  spdx_lookup==0.3.3;
 
-# Generate Locales
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen; \
-  localedef -i en_US -f UTF-8 en_US.UTF-8; \
-  locale-gen en_US.UTF-8;
 
-RUN useradd -ms /bin/bash br-user; \
-  echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc; \
-  echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc; \
-  chown -R br-user:br-user /home/br-user;
+RUN useradd -ms /bin/bash br-user
+RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc
+RUN echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc
+RUN chown -R br-user:br-user /home/br-user
 
 COPY brmake /usr/bin
 
 USER br-user
 WORKDIR /home/br-user
 ENV HOME /home/br-user
-ENV LC_ALL en_US.UTF-8
 
 CMD ["/bin/bash"]

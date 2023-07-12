@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+   br-bullseye:
+    build:
+      context: ./
+    environment:
+      - TZ=America/Los_Angeles
+      - DEBIAN_FRONTEND=noninteractive
+    privileged: true
+    stdin_open: true
+    tty: true
+    image: br-bullseye:latest
+    container_name:  br-bullseye

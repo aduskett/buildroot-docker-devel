@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # This script will test a package using several different environments.
 # Default environments:
-# CentOS 6
-# Debian 8 and 10
-# Ubuntu 14.04
-# Fedora 31
+# CentOS 7
+# Debian 11
+# Ubuntu 20.04
+# Fedora 38
 
 CWD=$(pwd)
 MACOS="false"
@@ -54,9 +54,9 @@ function main(){
     echo "Must provide arguments compatible with test-pkg."
     exit 1
   fi
-  if [[ $(check_docker_images "br-centos6") == "false" ]]; then
-    build_docker_image "Ubuntu" "19.10"
-    run_docker_image "br-ubuntu19.10"
+  if [[ $(check_docker_images "br-centos7") == "false" ]]; then
+    build_docker_image "Ubuntu" "20.04"
+    run_docker_image "br-ubuntu20.04"
   fi
 }
 

@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Everything needed to build Buildroot in a reproducable manner."
 
@@ -48,7 +48,6 @@ RUN set -e; \
   nano \
   ncurses-dev \
   patch \
-  python-dev \
   python3-dev \
   python3-pip \
   rsync \
@@ -67,10 +66,7 @@ RUN set -e; \
   nose2==0.9.2 \
   pexpect==4.8.0 \
   requests==2.25.1 \
-  spdx_lookup==0.3.3; \
-  cd /usr/bin/; \
-  rm python; \
-  ln -s python3 python;
+  spdx_lookup==0.3.3;
 
 # Set these arguments in the docker-compose.yml file and the docker/env file
 # if you wish to change the default values.
@@ -81,7 +77,7 @@ RUN set -e; \
 # The buildroot source code is extracted to /home/${BUILDROOT_USER}/{BUILDROOT_DIR}
 ARG BUILDROOT_USER
 ARG BUILDROOT_DIR
-ARG BUILDROOT_VERSION=2020.02.11
+ARG BUILDROOT_VERSION=2023.02.2
 ARG BUILDROOT_BRANCH=master
 ARG UID=1000
 ARG GID=1000

@@ -1,12 +1,12 @@
-version: "3.7"
+version: "3.8"
 services:
-   example-buildroot-project-build:
+   buildroot-flutter-dev:
     build:
       context: ./
       args:
          BUILDROOT_USER: br-user
          BUILDROOT_DIR: buildroot
-         BUILDROOT_VERSION: 2021.02.6
+         BUILDROOT_VERSION: 2023.02.2
          # BUILDROOT_VERSION: git
          # BUILDROOT_BRANCH: master
          # Space deliminated list of external trees of which to use.

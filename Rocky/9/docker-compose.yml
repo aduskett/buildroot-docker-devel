@@ -1,10 +1,10 @@
-version: "3.7"
+version: "3.8"
 services:
-   br-fedora32:
+   br-rocky9:
     build:
       context: ./
     privileged: true
     stdin_open: true
     tty: true
-    image: br-fedora32:latest
-    container_name:  br-fedora32
+    image: br-rocky9:latest
+    container_name:  br-rocky9

@@ -1,4 +1,4 @@
-FROM fedora:30
+FROM fedora:38
 MAINTAINER Adam Duskett <aduskett@gmail.com>
 
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
@@ -19,57 +19,40 @@ RUN dnf install -y \
   gcc \
   gcc-c++ \
   git \
+  glibc-devel.i686 \
+  glibc.i686 \
+  libgcc.i686 \
+  libstdc++-devel.i686 \
   make \
   mc \
   nano \
   ncurses-devel \
+  ncurses-devel.i686 \
   patch \
   perl-Data-Dumper \
   perl-ExtUtils-MakeMaker \
   perl-Thread-Queue \
+  python3-pip \
   rsync \
   sudo \
   svn \
   unzip \
   wget \
   which \
-  xz
-
-# 32bit binaries
-RUN set -e; \
-  dnf install -y \
-  glibc-devel.i686 \
-  libgcc.i686 \
-  libstdc++-devel.i686 \
-  ncurses-devel.i686 \
-  zlib.i686 \
-  glibc.i686
+  xz \
+  zlib.i686;
 
 RUN set -e; \
-  dnf install -y python2-pip; \
-  pip2 install -U pip --prefix=/usr; \
-  pip2 install \
-  nose2==0.9.2 \
-  pexpect==4.8.0 \
-  spdx_lookup==0.3.2;
-
-RUN set -e; \
-  dnf reinstall -y python3-pip; \
   pip3 install -U pip --prefix=/usr; \
   pip3 install \
-  nose2==0.9.2 \
+  nose2==0.13.0 \
   pexpect==4.8.0 \
-  spdx_lookup==0.3.2;
+  spdx_lookup==0.3.3;
 
 RUN set -e; \
   useradd -ms /bin/bash br-user; \
   echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc; \
   echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc;
-
-RUN set -e; \
-  chown -R br-user:br-user /home/br-user; \
-  echo "alias ls='ls --color=auto'" >> /root/.bashrc; \
-  echo "PS1='\u@\H [\w]$ '" >> /root/.bashrc
 
 COPY brmake /usr/bin
 

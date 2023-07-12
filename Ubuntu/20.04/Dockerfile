@@ -26,13 +26,16 @@ RUN set -e; \
 
 # Install dependencies
 RUN set -e; \
+  apt-get update; \
   apt-get upgrade -y; \
   apt-get install -y \
+  bash \
   bc \
   bison \
   bzip2 \
   cmake \
   cpio \
+  curl \
   dialog \
   expect \
   file \
@@ -47,31 +50,25 @@ RUN set -e; \
   nano \
   ncurses-dev \
   patch \
+  python3-dev \
+  python3-pip \
   rsync \
   subversion \
   sudo \
   tar \
   unzip \
-  wget
-
-# 32-bit support.
-RUN set -e; \
-  apt-get install -y \
+  wget \
   gcc-multilib \
   g++-multilib \
-  libc6-i386
-
-# Python2 is needed for utils/scanpy
-# Python3 is needed for support/testing/run-tests
-RUN set -e; \
-  apt-get install -y \ 
-  python3-dev \
-  python3-pip;
-
-RUN set -e; \
+  libc6-i386; \
   pip3 install \
+  aiohttp==3.7.3 \
+  cve==1.0.1 \
+  ijson==3.1.3 \
   nose2==0.9.2 \
-  pexpect==4.8.0;
+  pexpect==4.8.0 \
+  requests==2.25.1 \
+  spdx_lookup==0.3.3;
 
 
 RUN useradd -ms /bin/bash br-user

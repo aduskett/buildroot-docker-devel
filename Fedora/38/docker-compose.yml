@@ -1,10 +1,10 @@
-version: "3.7"
+version: "3.8"
 services:
-   br-fedora31:
+   br-fedora38:
     build:
       context: ./
     privileged: true
     stdin_open: true
     tty: true
-    image: br-fedora31:latest
-    container_name:  br-fedora31
+    image: br-fedora38:latest
+    container_name:  br-fedora38

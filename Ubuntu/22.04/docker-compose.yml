@@ -1,6 +1,6 @@
-version: "3.7"
+version: "3.8"
 services:
-   br-ubuntu19.10:
+   br-jammy:
     build:
       context: ./
     environment:
@@ -9,5 +9,5 @@ services:
     privileged: true
     stdin_open: true
     tty: true
-    image: br-ubuntu19.10:latest
-    container_name:  br-ubuntu19.10
+    image: br-jammy:latest
+    container_name:  br-jammy

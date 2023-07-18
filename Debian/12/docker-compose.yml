@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+   br-bookworm:
+    build:
+      context: ./
+    environment:
+      - TZ=America/Los_Angeles
+      - DEBIAN_FRONTEND=noninteractive
+    privileged: true
+    stdin_open: true
+    tty: true
+    image: br-bookworm:latest
+    container_name:  br-bookworm

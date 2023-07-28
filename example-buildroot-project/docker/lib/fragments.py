@@ -7,26 +7,26 @@ from lib.json_helper import JSONHelper
 
 
 class Fragments:
+    fragments: List[str]
+
     def parse(self, external_trees: str, config: Dict[str, Any]) -> None:
         """Parse all defined fragment files."""
         ndx = 0
         fragments_temp: List[str] = []
         self.fragments.clear()
         for external_tree in external_trees.split(":"):
-            extern_tree_base = "{}/{}".format(self.buildroot_path, external_tree)
+            extern_tree_base = f"{self.buildroot_path}/{external_tree}"
             extern_tree = config["external_trees"][ndx]
             ndx += 1
             if JSONHelper.parse_attr(extern_tree, "fragments", list)[0]:
                 fragments = list(extern_tree["fragments"])
                 retval = JSONHelper.parse_attr(extern_tree, "fragment_dir", str)
                 if retval[0]:
-                    self.fragment_dir = "{}/{}".format(extern_tree_base, retval[1])
+                    self.fragment_dir = f"{extern_tree_base}/{retval[1]}"
                 else:
-                    self.fragment_dir = "{}/configs".format(
-                        self.config_obj["config_dir_path"]
-                    )
+                    self.fragment_dir = f"{self.config_obj['config_dir_path']}/configs"
                 for fragment in fragments:
-                    fragment_path = "{}/{}".format(self.fragment_dir, fragment)
+                    fragment_path = f"{self.fragment_dir}/{fragment}"
                     Files.exists(fragment_path, fail=True)
                     fragments_temp.append(fragment_path)
         self.fragments = fragments_temp
@@ -38,10 +38,10 @@ class Fragments:
               with the default dependencies selected for the added fragments.
         """
         for fragment in self.fragments:
-            Logger.print_step("Applying fragment: {}".format(fragment))
+            Logger.print_step(f"Applying fragment: {fragment}")
             fragment_buff = Files.to_buffer(file_location=fragment)
             Files.save_buffer(
-                "{}/.config".format(self.config_obj["build_path"]),
+                f"{self.config_obj['build_path']}/.config",
                 fragment_buff,
                 append=True,
             )
@@ -61,5 +61,4 @@ class Fragments:
     ):
         self.buildroot_path = buildroot_path
         self.config_obj = config_obj
-        self.fragments: List[str] = []
         self.fragment_dir = ""

@@ -13,6 +13,10 @@ from lib.logger import Logger
 class InitParse:
     """Init file parsing class."""
 
+    user: str = "br-user"
+    buildroot_dir_name: str = "buildroot"
+    buildroot_path: str = f"/home/{user}/buildroot"
+
     def _parse_env(self):
         environment = {}
         if "environment" in self.env:
@@ -30,7 +34,7 @@ class InitParse:
             str,
             "buildroot",
         )[1]
-        self.buildroot_path = "/home/{}/buildroot".format(self.user)
+        self.buildroot_path = f"/home/{self.user}/buildroot"
 
     def __single_target(self, target: str, config: Config):
         for defconfig in self.env["configs"]:
@@ -46,7 +50,7 @@ class InitParse:
                 if self.clean_after_build:
                     config.clean(force=True)
                 return True
-        Logger.print_error("Could not find target: {}".format(target))
+        Logger.print_error(f"Could not find target: {target}")
         return False
 
     def run(self) -> bool:
@@ -60,7 +64,7 @@ class InitParse:
         for defconfig in self.env["configs"]:
             config_obj = config.parse(defconfig)
             if config_obj["skip"]:
-                Logger.print_step("Skipping {}".format(config_obj["defconfig"]))
+                Logger.print_step(f"Skipping {config_obj['defconfig']}")
                 continue
             if not config.clean():
                 return False
@@ -71,7 +75,7 @@ class InitParse:
         for defconfig in self.env["configs"]:
             config_obj = config.parse(defconfig)
             if not config_obj["build"] or config_obj["skip"] or self.no_build:
-                Logger.print_step("{}: Skip build step".format(config_obj["defconfig"]))
+                Logger.print_step(f"{config_obj['defconfig']}: Skip build step")
                 continue
             # Generate the legal information first, as to ensure the tarball is in the images
             # directory before post-image.sh is called.
@@ -99,9 +103,6 @@ class InitParse:
                 logging.error(str(err))
                 sys.exit(-1)
         self.apply_configs = apply_configs
-        self.user: str = "br-user"
-        self.buildroot_dir_name: str = "buildroot"
-        self.buildroot_path: str = "/home/{}/buildroot".format(self.user)
         self.fragment_dir: str = ""
         self.fragments: List[str] = []
         self.fragments = None

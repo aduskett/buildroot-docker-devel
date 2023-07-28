@@ -7,13 +7,6 @@
 # Fedora 38
 
 CWD=$(pwd)
-MACOS="false"
-
-function check_environment(){
-  if [[ ! -z $(uname -r |grep Darwin) ]]; then
-    MACOS="true"
-  fi
-}
 
 function check_running_container(){
   check=$(docker container ps -aq -f "name=${1}")
@@ -41,9 +34,46 @@ function run_docker_image(){
   check_running_container "${2}"
 }
 
+parse_args(){
+  local o O opts
 
-function main(){
-  check_environment
+  o='c:t:'
+  O='config:test-pkg-args:'
+  opts="$(getopt -o "${o}" -l "${O}" -- "${@}")"
+  eval set -- "${opts}"
+
+  while [ ${#} -gt 0 ]; do
+    case "${1}" in
+    (-c|--config)
+        CONFIG="${2}"; shift 2
+        ;;
+    (-t|--test-pkg-args)
+        TEST_PKG_ARGS="${2}"; shift 2
+        ;;
+    (-e|--rebuild)
+      REBUILD="true"; shift 1
+      ;;
+    (-r|--restart)
+      RESTART="true"; shift 1
+      ;;
+    (--root)
+      ROOT="true"; shift 1
+      ;;
+    (-k|--kill)
+      KILL="true"; shift 1
+      ;;
+    (-s|--stop)
+      STOP="true"; shift 1
+      ;;
+    (--)
+        shift; break
+        ;;
+    esac
+  done
+}
+
+
+main(){
 
   if [[ -z "${1}" ]]; then
     echo "Must provide path to a buildroot source tree."

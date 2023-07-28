@@ -40,44 +40,33 @@ class Buildroot:
     @staticmethod
     def legal_info(config_obj: Dict[str, Union[str, bool]]) -> bool:
         """Generate legal documentation."""
-        cmd = "{} BR2_DL_DIR={} legal-info".format(
-            config_obj["make"], config_obj["dl_dir"]
-        )
+        cmd = f"{config_obj['make']} BR2_DL_DIR={config_obj['dl_dir']} legal-info"
         board_name = config_obj["defconfig"].replace("_defconfig", "")
-        legal_info_tarball = "{}-legal-info.tar.gz".format(board_name)
-        legal_info_path = "{}/legal-info".format(config_obj["build_path"])
+        legal_info_tarball = f"{board_name}-legal-info.tar.gz"
+        legal_info_path = f"{config_obj['build_path']}/legal-info"
         os.chdir(config_obj["build_path"])
         if Files.exists(
-            "{}/images/{}-legal-info.tar.gz".format(
-                config_obj["build_path"], board_name
-            )
+            f"{config_obj['build_path']}/images/{board_name}-legal-info.tar.gz"
         ):
             Logger.print_step("Legal info already generated.")
             return True
-        Logger.print_step(
-            "Generating legal-info for {}".format(config_obj["defconfig"])
-        )
+        Logger.print_step(f"Generating legal-info for {config_obj['defconfig']}")
         if os.system(cmd):
             print(
-                "ERROR: Failed to generate legal information for {}".format(
-                    config_obj["defconfig"]
-                )
+                f"ERROR: Failed to generate legal information for {config_obj['defconfig']}"
             )
             if config_obj["make"] == "brmake":
-                log = Files.to_buffer(
-                    "{}/br.log".format(config_obj["build_path"]), split=True
-                )
+                log = Files.to_buffer(f"{config_obj['build_path']}/br.log", split=True)
                 for line in log[-100:]:
                     print(line)
             return False
         # We dont want the sources bundled in the tarball.
-        rmtree("{}/sources".format(legal_info_path))
-        rmtree("{}/host-sources".format(legal_info_path))
-        if os.system("tar -czf {} legal-info".format(legal_info_tarball)):
+        rmtree(f"{legal_info_path}/sources")
+        rmtree(f"{legal_info_path}/host-sources")
+        if os.system(f"tar -czf {legal_info_tarball} legal-info"):
             return False
-        if os.makedirs("images", exist_ok=True):
-            return False
-        if os.system("mv {} images/".format(legal_info_tarball)):
+        os.makedirs("images", exist_ok=True)
+        if os.system(f"mv {legal_info_tarball} images/"):
             return False
         return True
 
@@ -92,8 +81,8 @@ class Buildroot:
         """
         build_package = os.environ.get("BUILD_PACKAGE", None)
         os.chdir(config_obj["build_path"])
-        Logger.print_step("Building {}".format(config_obj["defconfig"]))
-        cmd = "{} BR2_DL_DIR={}".format(config_obj["make"], config_obj["dl_dir"])
+        Logger.print_step(f"Building {config_obj['defconfig']}")
+        cmd = f"{config_obj['make']} BR2_DL_DIR={config_obj['dl_dir']}"
         # Check if per_package directories is set. If so, check if BR2_JLEVEL is set and divide
         # by the number of cores by JLEVEL.
         if config_obj["per_package"]:
@@ -101,22 +90,20 @@ class Buildroot:
             j_level = int(
                 Buildroot.parse_defconfig(
                     "BR2_JLEVEL",
-                    "{}/.config".format(config_obj["build_path"]),
+                    f"{config_obj['build_path']}/.config",
                     config_obj["buildroot_path"],
                 )
             )
             if j_level:
                 cores = max(int(cores / j_level), 1)
-            cmd += " -Otarget -j{}".format(str(cores))
+            cmd += f" -Otarget -j{str(cores)}"
             if build_package:
-                cmd += " {}".format(build_package)
+                cmd += f" {build_package}"
 
         if os.system(cmd):
-            print("ERROR: Failed to build {}".format(config_obj["defconfig"]))
+            print(f"ERROR: Failed to build {config_obj['defconfig']}")
             if config_obj["make"] == "brmake":
-                log = Files.to_buffer(
-                    "{}/br.log".format(config_obj["build_path"]), split=True
-                )
+                log = Files.to_buffer(f"{config_obj['build_path']}/br.log", split=True)
                 for line in log[-100:]:
                     print(line)
             return False

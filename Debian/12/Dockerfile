@@ -66,7 +66,6 @@ RUN set -e; \
   pip3 install -U --break-system-packages pip; \
   pip3 install --force --break-system-packages \
   aiohttp==3.8.4 \
-  cve==1.0.1 \
   ijson==3.2.2 \
   nose2==0.13.0 \
   pexpect==4.8.0 \

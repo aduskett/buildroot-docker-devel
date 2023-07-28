@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-   br-jammy:
+   br-ubuntu22.04:
     build:
       context: ./
     environment:
@@ -9,5 +9,5 @@ services:
     privileged: true
     stdin_open: true
     tty: true
-    image: br-jammy:latest
-    container_name:  br-jammy
+    image: br-ubuntu22.04:latest
+    container_name:  br-ubuntu22.04

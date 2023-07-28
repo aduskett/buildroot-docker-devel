@@ -24,9 +24,18 @@ RUN set -e; \
   ln -snf /usr/share/zoneinfo/$TZ /etc/localtime; \
   echo $TZ > /etc/timezone;
 
+
+# We need at least GCC 10 on the host.
+RUN set -e; \
+  apt-get install -y software-properties-common; \
+  add-apt-repository ppa:savoury1/gcc-defaults-10; \
+  apt-get update; \
+  apt-get upgrade -y; \
+  apt-get dist-upgrade -y
+
 # Install dependencies
 RUN set -e; \
-  apt-get upgrade -y; \
+  apt-get upgrade -y; \  
   apt-get install -y \
   bc \
   bison \
@@ -39,45 +48,36 @@ RUN set -e; \
   flex \
   g++ \
   gcc \
+  gcc-multilib \
   git \
+  g++-multilib \
   lib32z1 \
+  libc6-i386 \
   make \
   mc \
   mercurial \
   nano \
   ncurses-dev \
   patch \
+  python3-dev \
+  python3-pip \
   rsync \
   subversion \
   sudo \
   tar \
   unzip \
-  wget
+  wget;
 
-# 32-bit support.
-RUN set -e; \
-  apt-get install -y \
-  gcc-multilib \
-  g++-multilib \
-  libc6-i386
-
-# Python2 is needed for utils/scanpy
 # Python3 is needed for support/testing/run-tests
 RUN set -e; \
-  apt-get install -y \ 
-  python-dev \
-  python3-dev \
-  python-pip \
-  python3-pip;
-
-RUN set -e; \
-  pip2 install \
-  nose2==0.9.2 \
+  python3 -m pip install -U pip; \
+  python3 -m pip install --force \
+  aiohttp==3.8.4 \
+  ijson==3.2.2 \
+  nose2==0.13.0 \
   pexpect==4.8.0 \
-  spdx_lookup==0.3.2; \
-  pip3 install \
-  nose2==0.9.2 \
-  pexpect==4.8.0;
+  requests==2.27.1 \
+  spdx_lookup==0.3.3;
 
 
 RUN useradd -ms /bin/bash br-user

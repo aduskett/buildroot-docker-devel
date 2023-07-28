@@ -1,4 +1,4 @@
-FROM ubuntu:jammy
+FROM ubuntu:22.04
 MAINTAINER Adam Duskett <aduskett@gmail.com>
 
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
@@ -60,14 +60,16 @@ RUN set -e; \
   wget \
   gcc-multilib \
   g++-multilib \
-  libc6-i386; \
-  pip3 install \
-  aiohttp==3.7.3 \
-  cve==1.0.1 \
-  ijson==3.1.3 \
-  nose2==0.9.2 \
+  libc6-i386;
+
+RUN set -e; \
+  pip3 install -U pip; \
+  pip3 install --force --break-system-packages \
+  aiohttp==3.8.4 \
+  ijson==3.2.2 \
+  nose2==0.13.0 \
   pexpect==4.8.0 \
-  requests==2.25.1 \
+  requests==2.31.0 \
   spdx_lookup==0.3.3;
 
 

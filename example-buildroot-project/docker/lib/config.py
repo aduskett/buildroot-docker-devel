@@ -11,25 +11,25 @@ from lib.logger import Logger
 
 
 class Config:
+    config: Dict[Any, Any]
+    fragments: Fragments
+
     def apply(self) -> bool:
         """Apply all configs defined in env.json."""
         Dirs.exists(self.buildroot_path, fail=True)
         Dirs.exists(self.config["output_dir"], make=True, fail=True)
         if not Dirs.exists(self.config["build_path"]) or self.config["apply_configs"]:
-            cmd = "BR2_EXTERNAL={}/{} BR2_DEFCONFIG={} {} {} O={}".format(
-                self.buildroot_path,
-                self.config["external_trees"],
-                self.config["defconfig_path"],
-                self.config["make"],
-                self.config["defconfig"],
-                self.config["build_path"],
+            cmd = (
+                f"BR2_EXTERNAL={self.buildroot_path}/{self.config['external_trees']} "
+                f"BR2_DEFCONFIG={self.config['defconfig_path']} {self.config['make']} "
+                f"{self.config['defconfig']} O={self.config['build_path']}"
             )
             os.chdir(self.buildroot_path)
-            Logger.print_step("Applying {}".format(self.config["defconfig_path"]))
+            Logger.print_step(f"Applying {self.config['defconfig_path']}")
             if self.config["make"] == "make":
                 Logger.print_step(cmd)
             if os.system(cmd):
-                print("ERROR: Failed to apply {}".format(self.config["defconfig_path"]))
+                print(f"ERROR: Failed to apply {self.config['defconfig_path']}")
                 return False
             self.fragments.apply()
         return True
@@ -38,21 +38,15 @@ class Config:
         """Clean all configs that have the clean boolean set to true."""
         if self.config["remove"]:
             if Dirs.exists(self.config["build_path"]):
-                Logger.print_step(
-                    "Removing directory {}".format(self.config["build_path"])
-                )
+                Logger.print_step(f"Removing directory {self.config['build_path']}")
                 return Dirs.remove(self.config["build_path"])
         elif self.config["clean"] or force:
             if Dirs.exists(self.config["build_path"]):
                 os.chdir(self.config["build_path"])
-                cmd = "{} clean".format(self.config["make"])
-                Logger.print_step("Cleaning {}".format(self.config["defconfig"]))
+                cmd = f"{self.config['make']} clean"
+                Logger.print_step(f"Cleaning {self.config['defconfig']}")
                 if os.system(cmd):
-                    print(
-                        "ERROR: Failed to clean {}".format(
-                            self.config["defconfig_path"]
-                        )
-                    )
+                    print(f"ERROR: Failed to clean {self.config['defconfig_path']}")
                     return False
                 os.chdir(self.buildroot_path)
                 return True
@@ -68,14 +62,14 @@ class Config:
         output_tree = JSONHelper.parse_attr(config, "output_tree", str)[1]
         if not output_tree:
             output_tree = self.config["external_trees"].split(":", maxsplit=1)[0]
-        output_dir_base = "{}/{}".format(self.buildroot_path, output_tree)
+        output_dir_base = f"{self.buildroot_path}/{output_tree}"
         output_dir_name = JSONHelper.parse_attr(
             config,
             "output_dir_name",
             str,
             "output",
         )[1]
-        self.config["output_dir"] = "{}/{}".format(output_dir_base, output_dir_name)
+        self.config["output_dir"] = f"{output_dir_base}/{output_dir_name}"
         config_dir_name = JSONHelper.parse_attr(
             config, "config_dir_name", str, default_value="configs"
         )[1]
@@ -83,23 +77,20 @@ class Config:
             self.config["config_dir_tree"] = self.config["external_trees"].split(
                 ":", maxsplit=1
             )[0]
-        self.config["config_dir_path"] = "{}/{}/{}".format(
-            self.buildroot_path, self.config["config_dir_tree"], config_dir_name
-        )
+        self.config[
+            "config_dir_path"
+        ] = f"{self.buildroot_path}/{self.config['config_dir_tree']}/{config_dir_name}"
         self.config["defconfig"] = defconfig.replace("_defconfig", "") + "_defconfig"
-        self.config["defconfig_path"] = "{}/{}".format(
-            self.config["config_dir_path"], self.config["defconfig"]
-        )
+        self.config[
+            "defconfig_path"
+        ] = f"{self.config['config_dir_path']}/{self.config['defconfig']}"
 
         if JSONHelper.parse_attr(config, "name", str)[0]:
-            self.config["build_path"] = "{}/{}".format(
-                self.config["output_dir"], config["name"]
-            )
+            self.config["build_path"] = f"{self.config['output_dir']}/{config['name']}"
         else:
-            self.config["build_path"] = "{}/{}".format(
-                self.config["output_dir"],
-                self.config["defconfig"].replace("_defconfig", ""),
-            )
+            self.config[
+                "build_path"
+            ] = f"{self.config['output_dir']}/{self.config['defconfig'].replace('_defconfig', '')}"
 
         if not os.path.isfile(self.config["defconfig_path"]):
             logging.error("%s: no such file!", format(self.config["defconfig_path"]))
@@ -116,10 +107,9 @@ class Config:
         if per_package == "y":
             self.config["per_package"] = True
         if not self.config["dl_dir"]:
-            self.config["dl_dir"] = "{}/{}/dl".format(
-                self.buildroot_path,
-                self.config["external_trees"].split(":", maxsplit=1)[0],
-            )
+            self.config[
+                "dl_dir"
+            ] = f"{self.buildroot_path}/{self.config['external_trees'].split(':', maxsplit=1)[0]}/dl"
         if not Dirs.exists(self.config["dl_dir"], make=True, fail=True):
             return False
         return True
@@ -158,7 +148,6 @@ class Config:
 
     def __init__(self, buildroot_path: str, apply_configs: bool):
         self.buildroot_path = buildroot_path
-        self.fragments = None
         self.config = {
             "build": True,
             "buildroot_path": self.buildroot_path,

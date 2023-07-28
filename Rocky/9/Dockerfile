@@ -45,8 +45,11 @@ RUN dnf install -y \
 RUN set -e; \
   pip3 install -U pip --prefix=/usr; \
   pip3 install \
+  aiohttp==3.8.4 \
+  ijson==3.2.2 \
   nose2==0.13.0 \
   pexpect==4.8.0 \
+  requests==2.31.0 \
   spdx_lookup==0.3.3;
 
 RUN set -e; \

@@ -39,7 +39,7 @@ class JSONHelper:
             )
             sys.exit(1)
         if fail:
-            print("Mandatory attribute: {} not defined!".format(attribute))
+            print(f"Mandatory attribute: {attribute} not defined!")
             sys.exit(1)
         if default_value or isinstance(default_value, bool):
             return True, default_value

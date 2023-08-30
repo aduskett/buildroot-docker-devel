@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:23.04
 MAINTAINER Adam Duskett <aduskett@gmail.com>
 
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
@@ -64,7 +64,7 @@ RUN set -e; \
   libc6-i386;
 
 RUN set -e; \
-  pip3 install -U pip; \
+  pip3 install --force --break-system-packages -U pip; \
   pip3 install --force --break-system-packages \
   aiohttp==3.8.4 \
   ijson==3.2.2 \

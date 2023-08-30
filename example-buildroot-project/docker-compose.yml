@@ -3,6 +3,10 @@ services:
    buildroot-flutter-dev:
     build:
       context: ./
+    ulimits:
+      nofile:
+        soft: "65536"
+        hard: "65536"
       args:
          BUILDROOT_USER: br-user
          BUILDROOT_DIR: buildroot

@@ -3,6 +3,10 @@ services:
    br-fedora37:
     build:
       context: ./
+    ulimits:
+      nofile:
+        soft: "65536"
+        hard: "65536"
     privileged: true
     stdin_open: true
     tty: true

@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-   br-ubuntu20.04:
+   br-ubuntu23.04:
     build:
       context: ./
     ulimits:
@@ -13,5 +13,5 @@ services:
     privileged: true
     stdin_open: true
     tty: true
-    image: br-ubuntu20.04:latest
-    container_name:  br-ubuntu20.04
+    image: br-ubuntu23.04:latest
+    container_name:  br-ubuntu23.04

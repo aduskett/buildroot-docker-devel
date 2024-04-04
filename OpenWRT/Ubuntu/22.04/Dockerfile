@@ -60,6 +60,7 @@ RUN set -e; \
 RUN useradd -ms /bin/bash wrt-user
 RUN echo "alias ls='ls --color=auto'" >> /home/wrt-user/.bashrc
 RUN echo "PS1='\u@\H [\w]$ '" >> /home/wrt-user/.bashrc
+COPY quiltrc /home/wrt-user/.quiltrc
 RUN chown -R wrt-user:wrt-user /home/wrt-user
 
 RUN set -e; \

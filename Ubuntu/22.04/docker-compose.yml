@@ -1,4 +1,3 @@
-version: "3.8"
 services:
    br-ubuntu22.04:
     build:

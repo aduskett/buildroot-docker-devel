@@ -1,9 +1,7 @@
-FROM ubuntu:jammy
-LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
-description="Everything needed to build Buildroot in a reproducable manner."
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive 
-ENV TZ=US/Pacific
+ENV TZ=UTC
 
 RUN set -e; \
   apt-get update; \
@@ -11,12 +9,10 @@ RUN set -e; \
   apt-get upgrade -y; \
   apt-get install -y locales;
 
-RUN set -e; \
-  rm -rf /var/lib/apt/lists/*; \
-  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-
 # Setup tzdata first as to avoid a dialog requesting tzdata setup.
 RUN set -e; \
+  rm -rf /var/lib/apt/lists/*; \
+  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
   apt-get update; \
   apt-get install -y tzdata; \
   ln -snf /usr/share/zoneinfo/$TZ /etc/localtime; \
@@ -28,45 +24,29 @@ RUN set -e; \
   apt-get upgrade -y; \
   apt-get install -y \
   bash \
-  bc \
-  bison \
-  bzip2 \
-  cmake \
-  cpio \
-  curl \
-  dialog \
-  expect \
+  debianutils \
+  diffstat \
   file \
-  flex \
-  g++ \
+  gawk \
   gcc \
   git \
-  lib32z1 \
-  make \
-  mc \
-  mercurial \
+  iputils-ping \
+  libacl1 \
+  liblz4-tool \
+  locales \
   nano \
-  ncurses-dev \
-  patch \
-  python3-dev \
+  python3 \
+  python3-git \
+  python3-jinja2 \
+  python3-pexpect \
   python3-pip \
-  rsync \
-  subversion \
-  sudo \
-  tar \
+  python3-subunit \
+  socat \
+  texinfo \
   unzip \
   wget \
-  gcc-multilib \
-  g++-multilib \
-  libc6-i386; \
-  pip3 install \
-  aiohttp==3.7.3 \
-  cve==1.0.1 \
-  ijson==3.1.3 \
-  nose2==0.9.2 \
-  pexpect==4.8.0 \
-  requests==2.25.1 \
-  spdx_lookup==0.3.3;
+  xz-utils \
+  zstd
 
 # Set these arguments in the docker-compose.yml file and the docker/env file
 # if you wish to change the default values.

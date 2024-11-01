@@ -1,9 +1,10 @@
-FROM debian:bookworm
+FROM ubuntu:noble
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Container with everything needed to run Buildroot"
 
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV TZ=US/Pacific
+
 RUN set -e; \
   apt --allow-unauthenticated update; \
   apt --allow-unauthenticated upgrade -y; \
@@ -53,6 +54,7 @@ RUN set -e; \
   tar \
   unzip \
   wget \
+  zip \
   gcc-multilib \
   g++-multilib \
   libc6-i386;
@@ -60,7 +62,6 @@ RUN set -e; \
 RUN set -e; \
   pip3 install --force --break-system-packages \
   spdx_lookup==0.3.3;
-
 
 RUN useradd -ms /bin/bash br-user
 RUN echo "alias ls='ls --color=auto'" >> /home/br-user/.bashrc

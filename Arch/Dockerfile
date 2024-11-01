@@ -1,6 +1,4 @@
 FROM archlinux:latest
-MAINTAINER Adam Duskett <aduskett@gmail.com>
-
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Container with everything needed to run Buildroot"
 

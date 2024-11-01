@@ -1,4 +1,3 @@
-version: "3.8"
 services:
    br-ubuntu20.04:
     build:

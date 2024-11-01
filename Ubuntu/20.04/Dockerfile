@@ -1,6 +1,4 @@
 FROM ubuntu:focal
-MAINTAINER Adam Duskett <aduskett@gmail.com>
-
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Container with everything needed to run Buildroot"
 
@@ -8,19 +6,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=US/Pacific
 
 RUN set -e; \
-  apt-get update; \
-  apt-get install -y apt-utils; \
-  apt-get upgrade -y; \
-  apt-get install -y locales;
-
-RUN set -e; \
-  rm -rf /var/lib/apt/lists/*; \
-  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-
-# Setup tzdata first as to avoid a dialog requesting tzdata setup.
-RUN set -e; \
-  apt-get update; \
-  apt-get install -y tzdata; \
+  apt --allow-unauthenticated update; \
+  apt --allow-unauthenticated upgrade -y; \
+  apt-get install -y apt-utils locales tzdata; \
+  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8; \
+  locale-gen en_US.UTF-8; \
   ln -snf /usr/share/zoneinfo/$TZ /etc/localtime; \
   echo $TZ > /etc/timezone;
 
@@ -60,7 +50,10 @@ RUN set -e; \
   wget \
   gcc-multilib \
   g++-multilib \
-  libc6-i386; \
+  libc6-i386;
+
+RUN set -e; \
+  pip3 install -U pip; \
   pip3 install \
   aiohttp==3.7.3 \
   cve==1.0.1 \

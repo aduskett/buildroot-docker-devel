@@ -10,6 +10,7 @@ def signal_handler(sig, _):
     """Handle signals.
 
     :param int sig: The signal of which to handle.
+    :param object _: unused frame stack.
     """
     if sig == signal.SIGINT:
         print("\n## Exiting. ##\n")
@@ -25,7 +26,6 @@ def main():
     clean_after_build = bool(
         os.environ.get("CLEAN_AFTER_BUILD", "false").lower() == "true"
     )
-
     if no_build:
         sys.stdout.write("NO_BUILD environment variable set. Skipping build step!\n")
     for i, _ in enumerate(env_files):

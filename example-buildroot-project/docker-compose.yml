@@ -1,22 +1,5 @@
 services:
-   buildroot-flutter-dev:
-    build:
-      context: ./
-    ulimits:
-      nofile:
-        soft: "65536"
-        hard: "65536"
-      args:
-         BUILDROOT_USER: br-user
-         BUILDROOT_DIR: buildroot
-         BUILDROOT_VERSION: 2023.02.2
-         # BUILDROOT_VERSION: git
-         # BUILDROOT_BRANCH: master
-         # Space deliminated list of external trees of which to use.
-         EXTERNAL_TREES: external
-         # BUILDROOT_PATCH_DIR: "external/patches/buildroot/"
-         UID: 1000
-         GID: 1000
+   buildroot-dev:
     environment:
       - APPLY_CONFIGS
       - CLEAN_AFTER_BUILD
@@ -24,6 +7,23 @@ services:
       - EXIT_AFTER_BUILD
       - NO_BUILD
       - VERBOSE
+    build:
+      context: ./
+      args:
+        BUILDROOT_USER: br-user
+        BUILDROOT_DIR: buildroot
+        BUILDROOT_VERSION: 2025.02
+        # BUILDROOT_VERSION: git
+        # BUILDROOT_BRANCH: master
+        # Space deliminated list of external trees of which to use.
+        EXTERNAL_TREES: external
+        # BUILDROOT_PATCH_DIR: "external/patches/buildroot/"
+        UID: 1000
+        GID: 1000
+      ulimits:
+        nofile:
+          soft: 65536
+          hard: 65536
     privileged: true
     stdin_open: true
     tty: true

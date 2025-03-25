@@ -103,6 +103,9 @@ class InitParse:
                 logging.error(str(err))
                 sys.exit(-1)
         self.apply_configs = apply_configs
+        self.user: str = "br-user"
+        self.buildroot_dir_name: str = "buildroot"
+        self.buildroot_path: str = "/home/{}/buildroot".format(self.user)
         self.fragment_dir: str = ""
         self.fragments: List[str] = []
         self.fragments = None

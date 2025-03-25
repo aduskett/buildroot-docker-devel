@@ -1,4 +1,5 @@
 import os
+import subprocess
 import multiprocessing
 from shutil import rmtree
 from typing import Dict, Union
@@ -65,7 +66,8 @@ class Buildroot:
         rmtree(f"{legal_info_path}/host-sources")
         if os.system(f"tar -czf {legal_info_tarball} legal-info"):
             return False
-        os.makedirs("images", exist_ok=True)
+        if os.makedirs("images", exist_ok=True):
+            return False
         if os.system(f"mv {legal_info_tarball} images/"):
             return False
         return True
@@ -81,6 +83,12 @@ class Buildroot:
         """
         build_package = os.environ.get("BUILD_PACKAGE", None)
         os.chdir(config_obj["build_path"])
+        with open(os.devnull, "wb") as null:
+            subprocess.check_call(
+                [config_obj["make"], "olddefconfig"],
+                stdout=null,
+                stderr=subprocess.STDOUT,
+            )
         Logger.print_step(f"Building {config_obj['defconfig']}")
         cmd = f"{config_obj['make']} BR2_DL_DIR={config_obj['dl_dir']}"
         # Check if per_package directories is set. If so, check if BR2_JLEVEL is set and divide
@@ -100,6 +108,7 @@ class Buildroot:
             if build_package:
                 cmd += f" {build_package}"
 
+        Logger.print_step("Running {} for {}".format(cmd, config_obj["build_path"]))
         if os.system(cmd):
             print(f"ERROR: Failed to build {config_obj['defconfig']}")
             if config_obj["make"] == "brmake":

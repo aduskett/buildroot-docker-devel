@@ -1,20 +1,14 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV TZ=UTC
 
 RUN set -e; \
-  apt-get update; \
-  apt-get install -y apt-utils; \
-  apt-get upgrade -y; \
-  apt-get install -y locales;
-
-# Setup tzdata first as to avoid a dialog requesting tzdata setup.
-RUN set -e; \
-  rm -rf /var/lib/apt/lists/*; \
-  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
-  apt-get update; \
-  apt-get install -y tzdata; \
+  apt --allow-unauthenticated update; \
+  apt --allow-unauthenticated upgrade -y; \
+  apt-get install -y apt-utils locales tzdata; \
+  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8; \
+  locale-gen en_US.UTF-8; \
   ln -snf /usr/share/zoneinfo/$TZ /etc/localtime; \
   echo $TZ > /etc/timezone;
 
@@ -24,29 +18,48 @@ RUN set -e; \
   apt-get upgrade -y; \
   apt-get install -y \
   bash \
-  debianutils \
-  diffstat \
+  bc \
+  bison \
+  bzip2 \
+  cmake \
+  cpio \
+  curl \
+  dialog \
+  expect \
   file \
-  gawk \
+  flex \
+  g++ \
   gcc \
   git \
-  iputils-ping \
-  libacl1 \
-  liblz4-tool \
-  locales \
+  lib32z1 \
+  make \
+  mc \
+  mercurial \
   nano \
-  python3 \
-  python3-git \
-  python3-jinja2 \
-  python3-pexpect \
+  ncurses-dev \
+  patch \
+  python3-dev \
   python3-pip \
-  python3-subunit \
-  socat \
-  texinfo \
+  python3-aiohttp \
+  python3-cvelib \
+  python3-ijson \
+  python3-nose2 \
+  python3-pexpect \
+  python3-requests \
+  rsync \
+  subversion \
+  sudo \
+  tar \
   unzip \
   wget \
-  xz-utils \
-  zstd
+  zip \
+  gcc-multilib \
+  g++-multilib \
+  libc6-i386;
+
+RUN set -e; \
+  pip3 install --force --break-system-packages \
+  spdx_lookup==0.3.3;
 
 # Set these arguments in the docker-compose.yml file and the docker/env file
 # if you wish to change the default values.
@@ -65,6 +78,8 @@ ARG GID=1000
 # Add the ${BUILDROOT_USER} user, as buildroot should never be built as root.
 RUN /bin/bash; \
   set -e; \
+  usermod -u 9955 ubuntu; \
+  groupmod -g 9955 ubuntu; \
   groupadd -r -g ${GID} ${BUILDROOT_USER}; \
   useradd -ms /bin/bash -u ${UID} -g ${GID} ${BUILDROOT_USER}; \
   echo "alias ls='ls --color=auto'" >> /home/${BUILDROOT_USER}/.bashrc; \
@@ -74,10 +89,10 @@ RUN /bin/bash; \
     echo "Cloning Buildroot on branch ${BUILDROOT_BRANCH}"; \
     git clone git://git.buildroot.net/buildroot /home/${BUILDROOT_USER}/buildroot -b ${BUILDROOT_BRANCH}; \
   else \
-    wget https://buildroot.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.bz2 -O /home/${BUILDROOT_USER}/buildroot.tar.bz2; \
+    wget https://buildroot.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.xz -O /home/${BUILDROOT_USER}/buildroot.tar.xz; \
     mkdir -p /home/${BUILDROOT_USER}/${BUILDROOT_DIR}; \
-    tar -jxf /home/${BUILDROOT_USER}/buildroot.tar.bz2 --strip-components=1 -C /home/${BUILDROOT_USER}/${BUILDROOT_DIR}; \
-    rm -rf /home/${BUILDROOT_USER}/buildroot.tar.bz2; \
+    tar -Jxf /home/${BUILDROOT_USER}/buildroot.tar.xz --strip-components=1 -C /home/${BUILDROOT_USER}/${BUILDROOT_DIR}; \
+    rm -rf /home/${BUILDROOT_USER}/buildroot.tar.xz; \
   fi; \
   chown -R ${BUILDROOT_USER}:${BUILDROOT_USER} /home/${BUILDROOT_USER}/${BUILDROOT_DIR};
 

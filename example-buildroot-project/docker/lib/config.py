@@ -148,6 +148,7 @@ class Config:
 
     def __init__(self, buildroot_path: str, apply_configs: bool):
         self.buildroot_path = buildroot_path
+        self.fragments = None
         self.config = {
             "build": True,
             "buildroot_path": self.buildroot_path,

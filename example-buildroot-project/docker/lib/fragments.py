@@ -61,4 +61,5 @@ class Fragments:
     ):
         self.buildroot_path = buildroot_path
         self.config_obj = config_obj
+        self.fragments: List[str] = []
         self.fragment_dir = ""

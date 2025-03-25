@@ -39,21 +39,20 @@ This directory has the following structure:
 - A computer running macOS, Linux, or Windows with WSL2
 - Docker
 - Python3
-- docker-compose
 - 10 - 20GB of free space.
 
 ## Setup
   - First, set the ENV_FILES in docker/env to what is appropriate for the build.
   - Second, set the env.json file to what is appropriate for the build.
     By default, the environment variables automatically apply all config files found in external/configs but does not auto-build them.
-  - run `docker-compose build`
+  - run `make build`
 
 ## Building
 If auto-building:
-  - run `docker-compose up`
+  - run `make up`
 
 If manually-building:
-  - run `docker-compose up -d && && docker exec -ti buildroot-devel-build /bin/bash`
+  - run `docker compose up -d && && docker exec -ti buildroot-devel-build /bin/bash`
   - Then navigate to `/home/br-user/buildroot/` and build manually. If `build` is set to true
     in the environment json file, then the output directory is automatically created in the defined external tree.
     The default for the included example env.json file creates the directory external/output
@@ -66,14 +65,14 @@ If manually-building:
 ## Changing the buildroot UID and GID
   - The default UID and GID for the buildroot user is 1000, however you may customize the default by either:
     - modifying the docker-compose.yml file directly.
-    - passing the UID and GID directly from the command line. IE: `docker-compose build --build-arg UID=$(id -u $(whoami)) --build-arg GID=$(id -g $(whoami))`
+    - passing the UID and GID directly from the command line. IE: `docker compose build --build-arg UID=$(id -u $(whoami)) --build-arg GID=$(id -g $(whoami))`
 
 ## Changing the buildroot directory name
   - Edit the buildroot_dir_name variable in the docker/env.json and docker-compose.yml files.
 
 ## Adding patches to buildroot
   - Add a directory to the BUILDROOT_PATCH_DIR argument in the docker-compose.yml file.
-    Patches are automatically copied and applied to buildroot when `docker-compose build` is ran.
+    Patches are automatically copied and applied to buildroot when `docker compose build` is ran.
 
 ## Adding additional external trees
   - Add additional external trees by copying the external directory to a new directory and adding the new directories name to the
@@ -82,7 +81,7 @@ If manually-building:
 
 ## Changing the Buildroot version
   - Edit the BUILDROOT_VERSION argument in the docker-compose.yml file
-  - run `docker-compose build`
+  - run `make build`
   Note: If you have a BUILDROOT_PATCH_DIR defined, watch for failures during the build process to ensure that all patches applied cleanly!
 
 # Using the packages without docker:

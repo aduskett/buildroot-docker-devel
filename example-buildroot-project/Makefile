@@ -7,11 +7,11 @@ target ?= example
 
 .PHONY: build
 build:
-	docker-compose build
+	docker compose build
 
 .PHONY: down
 down:
-	docker-compose down
+	docker compose down
 
 .PHONY: menuconfig
 menuconfig:
@@ -20,7 +20,7 @@ menuconfig:
 
 .PHONY: kill
 kill:
-	docker-compose kill
+	docker compose kill
 
 .PHONY: shell
 shell:
@@ -29,8 +29,8 @@ shell:
 
 .PHONY: up
 up:
-	VERBOSE=${VERBOSE} ENV_FILES=${ENV_FILES} EXIT_AFTER_BUILD=${EXIT_AFTER_BUILD} NO_BUILD=${NO_BUILD} CLEAN_AFTER_BUILD=${CLEAN_AFTER_BUILD} docker-compose up --abort-on-container-exit
+	VERBOSE=${VERBOSE} ENV_FILES=${ENV_FILES} EXIT_AFTER_BUILD=${EXIT_AFTER_BUILD} NO_BUILD=${NO_BUILD} CLEAN_AFTER_BUILD=${CLEAN_AFTER_BUILD} docker compose up --abort-on-container-exit
 
 .PHONY: upd
 upd:
-	VERBOSE=${VERBOSE} ENV_FILES=${ENV_FILES} EXIT_AFTER_BUILD=${EXIT_AFTER_BUILD} NO_BUILD=${NO_BUILD} CLEAN_AFTER_BUILD=${CLEAN_AFTER_BUILD} docker-compose up -d
+	VERBOSE=${VERBOSE} ENV_FILES=${ENV_FILES} EXIT_AFTER_BUILD=${EXIT_AFTER_BUILD} NO_BUILD=${NO_BUILD} CLEAN_AFTER_BUILD=${CLEAN_AFTER_BUILD} docker compose up -d

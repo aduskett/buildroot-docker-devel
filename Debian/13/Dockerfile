@@ -1,26 +1,16 @@
-FROM ubuntu:23.04
-MAINTAINER Adam Duskett <aduskett@gmail.com>
-
+FROM debian:trixy
 LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Container with everything needed to run Buildroot"
 
 ENV DEBIAN_FRONTEND=noninteractive 
-ENV TZ=US/Pacific
+ENV TZ=UTC
 
 RUN set -e; \
-  apt-get update; \
-  apt-get install -y apt-utils; \
-  apt-get upgrade -y; \
-  apt-get install -y locales;
-
-RUN set -e; \
-  rm -rf /var/lib/apt/lists/*; \
-  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-
-# Setup tzdata first as to avoid a dialog requesting tzdata setup.
-RUN set -e; \
-  apt-get update; \
-  apt-get install -y tzdata; \
+  apt --allow-unauthenticated update; \
+  apt --allow-unauthenticated upgrade -y; \
+  apt-get install -y apt-utils locales tzdata; \
+  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8; \
+  locale-gen en_US.UTF-8; \
   ln -snf /usr/share/zoneinfo/$TZ /etc/localtime; \
   echo $TZ > /etc/timezone;
 
@@ -52,25 +42,24 @@ RUN set -e; \
   patch \
   python3-dev \
   python3-pip \
+  python3-aiohttp \
+  python3-cvelib \
+  python3-ijson \
+  python3-nose2 \
+  python3-pexpect \
+  python3-requests \
   rsync \
   subversion \
   sudo \
   tar \
   unzip \
   wget \
-  zip \
   gcc-multilib \
   g++-multilib \
   libc6-i386;
 
 RUN set -e; \
-  pip3 install --force --break-system-packages -U pip; \
   pip3 install --force --break-system-packages \
-  aiohttp==3.8.4 \
-  ijson==3.2.2 \
-  nose2==0.13.0 \
-  pexpect==4.8.0 \
-  requests==2.31.0 \
   spdx_lookup==0.3.3;
 
 

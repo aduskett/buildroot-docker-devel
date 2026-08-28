@@ -4,7 +4,7 @@ LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Container with everything needed to run Buildroot"
 
 ENV DEBIAN_FRONTEND=noninteractive 
-ENV TZ=US/Pacific
+ENV TZ=UTC
 
 RUN set -e; \
   mkdir -p /data/; \
@@ -63,9 +63,11 @@ RUN set -e; \
   python3-dev \
   python3-aiohttp \
   python3-cvelib \
+  python3-flake8 \
   python3-git \
   python3-ijson \
   python3-jinja2 \
+  python3-magic \
   python3-nose2 \
   python3-pexpect \
   python3-pip \
@@ -94,8 +96,6 @@ RUN echo "PS1='\u@\H [\w]$ '" >> /home/br-user/.bashrc
 RUN chown -R br-user:br-user /home/br-user
 
 COPY brmake /usr/bin
-COPY repo /usr/bin
-COPY repo_launcher /usr/bin
 USER br-user
 WORKDIR /home/br-user
 ENV HOME /home/br-user

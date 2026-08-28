@@ -1,5 +1,5 @@
 services:
-   br-ubuntu18.04:
+   br-ubuntu26.04:
     build:
       context: ./
     ulimits:
@@ -7,10 +7,10 @@ services:
         soft: "65536"
         hard: "65536"
     environment:
-      - TZ=America/Los_Angeles
+      - TZ=UTC
       - DEBIAN_FRONTEND=noninteractive
     privileged: true
     stdin_open: true
     tty: true
-    image: br-ubuntu18.04:latest
-    container_name:  br-ubuntu18.04
+    image: br-ubuntu26.04:latest
+    container_name:  br-ubuntu26.04

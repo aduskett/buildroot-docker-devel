@@ -1,7 +1,7 @@
-FROM ubuntu:22.04
+FROM ubuntu:26.04
 
 ENV DEBIAN_FRONTEND=noninteractive 
-ENV TZ=US/Pacific
+ENV TZ=UTC
 
 RUN set -e; \
   apt-get update; \
@@ -52,6 +52,13 @@ RUN set -e; \
     unzip \
     wget \
     zlib1g-dev;
+
+# Revert to gnu coreutils
+RUN set -e; \
+  apt-get update; \
+  apt-get remove -y \
+    coreutils-from-uutils \
+    --allow-remove-essential
 
 RUN set -e; \
   pip3 install -U pip; \

@@ -3,7 +3,8 @@ LABEL maintainer="Adam Duskett <aduskett@gmail.com>" \
 description="Container with everything needed to run Buildroot"
 
 ENV DEBIAN_FRONTEND=noninteractive 
-ENV TZ=US/Pacific
+ENV TZ=UTC
+
 RUN set -e; \
   apt --allow-unauthenticated update; \
   apt --allow-unauthenticated upgrade -y; \

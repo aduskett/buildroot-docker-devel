@@ -7,7 +7,7 @@ services:
         soft: "65536"
         hard: "65536"
     environment:
-      - TZ=America/Los_Angeles
+      - TZ=UTC
       - DEBIAN_FRONTEND=noninteractive
     privileged: true
     stdin_open: true

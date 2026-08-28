@@ -1,6 +1,5 @@
-version: "3.8"
 services:
-   br-ubuntu23.04:
+   br-bookworm:
     build:
       context: ./
     ulimits:
@@ -8,10 +7,10 @@ services:
         soft: "65536"
         hard: "65536"
     environment:
-      - TZ=America/Los_Angeles
+      - TZ=UTC
       - DEBIAN_FRONTEND=noninteractive
     privileged: true
     stdin_open: true
     tty: true
-    image: br-ubuntu23.04:latest
-    container_name:  br-ubuntu23.04
+    image: br-bookworm:latest
+    container_name:  br-bookworm
